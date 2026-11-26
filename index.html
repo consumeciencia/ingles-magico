@@ -342,6 +342,12 @@ h1,h2,h3{font-family:var(--fh);line-height:1.08;margin:0;text-wrap:balance}
 .sk{border-radius:16px;padding:14px;font:700 18px var(--fh);display:grid;gap:8px;text-align:left;border:3px solid transparent}
 .sk.on{border-color:currentColor}
 .sk i{display:flex;gap:4px}.sk i u{width:22px;height:22px;border-radius:50%;display:block}
+.tip{background:color-mix(in srgb,var(--a3),transparent 75%);border:2px solid var(--a3);border-radius:14px;padding:12px 14px;margin:8px 0;line-height:1.4}
+.vlist{display:grid;gap:8px;margin:10px 0}
+.vrow{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:14px;background:var(--bg);flex-wrap:wrap}
+.vrow.on{outline:3px solid var(--a1)}
+.vrow span{flex:1;min-width:150px}.vrow small{display:block;opacity:.75}
+.vrow button{padding:10px 14px;font-size:16px}
 .avs{display:flex;flex-wrap:wrap;gap:8px}
 .avs button{font-size:42px;width:70px;height:70px;border-radius:16px;background:var(--bg)}
 .avs button.on{outline:4px solid var(--a1)}
@@ -465,11 +471,41 @@ const PRAISE_A=['Excelente.','¡Bravo!','Perfecto.','Así se hace.','Impecable.'
 
 /* ======================= SONIDO Y VOZ ======================= */
 let voices=[];
-const loadV=()=>{try{voices=speechSynthesis.getVoices()}catch(e){}};
+const loadV=()=>{try{voices=speechSynthesis.getVoices()||[]}catch(e){}};
 try{speechSynthesis.onvoiceschanged=loadV;loadV()}catch(e){}
-function say(t,lang='en-US',rate=.9){
-  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=rate;u.pitch=ctx==='kid'?1.15:1;
-    const v=voices.find(v=>v.lang===lang)||voices.find(v=>v.lang&&v.lang.startsWith(lang.slice(0,2)));if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}
+const NOVELTY=/albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|ralph|kathy|grandma|grandpa|rocko|shelley|flo\b|eddy|reed|sandy|eloquence/i;
+function vScore(v,lang){
+  const n=v.name||'';let sc=0;
+  if(NOVELTY.test(n))sc-=200;
+  if(/premium/i.test(n))sc+=120;
+  if(/enhanced|mejorad|améliorée/i.test(n))sc+=90;
+  if(/neural|natural|siri/i.test(n))sc+=80;
+  if(/^(ava|zoe|samantha|allison|evan|nathan|joelle|noelle|tom|susan|serena|karen|daniel|moira|tessa|paulina|mónica|monica|jorge|diego|juan|marisol)\b/i.test(n))sc+=20;
+  if(v.lang===lang)sc+=15;else if(v.lang&&v.lang.replace('_','-').startsWith(lang.slice(0,2)))sc+=5;else sc-=500;
+  if(/google/i.test(n))sc+=40;
+  if(v.localService)sc+=3;
+  return sc;
+}
+const vLabel=v=>(/premium/i.test(v.name)?'⭐ Premium':/enhanced|mejorad/i.test(v.name)?'✨ Mejorada':'Básica');
+function bestVoice(lang){
+  const pref=S.voice&&S.voice[lang.slice(0,2)];
+  if(pref){const v=voices.find(v=>v.voiceURI===pref||v.name===pref);if(v)return v}
+  return voices.filter(v=>v.lang).map(v=>[vScore(v,lang),v]).filter(x=>x[0]>-100).sort((a,b)=>b[0]-a[0]).map(x=>x[1])[0]||null;
+}
+const ROLE={kid:{rate:.92,pitch:1.08},bip:{rate:.98,pitch:1.3},adult:{rate:.92,pitch:.97}};
+function say(t,lang='en-US',rate=null,role=null){
+  try{speechSynthesis.cancel();const r=ROLE[role||(ctx==='adult'?'adult':'kid')];
+    const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=rate||r.rate;u.pitch=r.pitch;
+    const v=bestVoice(lang);if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}
+}
+function voicePanel(){
+  loadV();const en=voices.filter(v=>v.lang&&vScore(v,'en-US')>-100).sort((a,b)=>vScore(b,'en-US')-vScore(a,'en-US')).slice(0,14);
+  const cur=bestVoice('en-US');const good=cur&&/premium|enhanced|mejorad|neural|natural|google/i.test(cur.name);
+  return`<h3 style="margin-top:18px">🔊 Voz en inglés</h3>
+   <p>Ahora suena: <b>${cur?esc(cur.name):'la del sistema'}</b> ${cur?'('+vLabel(cur)+')':''}</p>
+   ${good?'':`<div class="tip"><b>Para voces más naturales</b> descárgalas una vez en el iPad:<br><b>Ajustes → Accesibilidad → Contenido leído → Voces → Inglés</b> y descarga una que diga <b>Premium</b> o <b>Mejorada</b> (por ejemplo Ava, Zoe o Evan). Luego cierra y abre la app: la elegirá sola.</div>`}
+   <div class="vlist">${en.length?en.map(v=>`<div class="vrow ${cur&&v.voiceURI===cur.voiceURI?'on':''}"><span><b>${esc(v.name)}</b><small>${esc(v.lang)} · ${vLabel(v)}</small></span><button class="ghost" data-act="vTry" data-u="${esc(v.voiceURI)}">▶ Probar</button><button class="btnA" data-act="vPick" data-u="${esc(v.voiceURI)}">Usar</button></div>`).join(''):'<p>No encontré voces en inglés en este dispositivo.</p>'}</div>
+   ${S.voice&&S.voice.en?'<button class="ghost" data-act="vAuto">↺ Elegir automáticamente la mejor</button>':''}`;
 }
 let ac=null;
 function tone(f,d=.12,type='sine',v=.15,delay=0){
@@ -523,6 +559,7 @@ function celebrate(level=1){
 let toastT;
 function toast(html,ms=2300){const o=$('.toast');if(o)o.remove();clearTimeout(toastT);const d=document.createElement('div');d.className='toast';d.innerHTML=html;document.body.appendChild(d);toastT=setTimeout(()=>d.remove(),ms)}
 function modal(html){closeModal();const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="card"><button class="icon x" data-act="closeModal" aria-label="Cerrar">✕</button>${html}</div>`;m.addEventListener('click',e=>{if(e.target===m)closeModal()});document.body.appendChild(m)}
+function reopenVoice(){if($('.shead')&&ctx==='adult')return settings();ACT.skins()}
 function closeModal(){const m=$('.modal');if(m)m.remove()}
 function sparkle(e){if(RM||Math.random()<.55)return;const c=pal();add({x:e.clientX,y:e.clientY,vx:(Math.random()-.5)*2,vy:-1-Math.random()*2,c:R(c),s:7,circle:1,g:.04,life:40})}
 
@@ -936,7 +973,7 @@ function chat(){
   const t=$('#th');t.scrollTop=t.scrollHeight;
   $('#cf').addEventListener('submit',e=>{e.preventDefault();const v=$('#ci').value.trim();if(v)chatSend(v)});
 }
-function chatSend(t){CH.push({b:0,t});const r=bipReply(t);CH.push({b:1,t:r[0],es:r[1]});CH=CH.slice(-30);sfx.tap();chat();say(r[0]);if(Math.random()<.4)confetti(innerWidth*.2,innerHeight*.5,30)}
+function chatSend(t){CH.push({b:0,t});const r=bipReply(t);CH.push({b:1,t:r[0],es:r[1]});CH=CH.slice(-30);sfx.tap();chat();say(r[0],'en-US',null,'bip');if(Math.random()<.4)confetti(innerWidth*.2,innerHeight*.5,30)}
 function chatMic(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition,h=$('#heard');
   const fb='El micrófono no está disponible aquí: toca una frase o escríbela.';if(!SR){h.textContent=fb;return}
@@ -1023,7 +1060,7 @@ function ach(){
 function settings(){
   clearTimers();
   app.innerHTML=`<div class="realm"><div class="shead"><button class="icon" data-act="realm">⬅</button><h2 style="font-size:34px;flex:1">⚙️ Ajustes</h2></div>
-   <div class="card"><h3>Estilo del reino</h3>${skinGrid(ADULT_SKINS,S.adult.skin)}</div>
+   <div class="card"><h3>Estilo del reino</h3>${skinGrid(ADULT_SKINS,S.adult.skin)}</div><div class="card">${voicePanel()}</div>
    <div class="card row" style="justify-content:flex-start"><button class="btnA" data-act="redoOnb">📝 Responder otra vez las preguntas</button><button class="ghost" data-act="housePick">🛡️ Cambiar de casa</button></div></div>${adultTabs('set')}`;
 }
 function skinGrid(set,cur){return`<div class="skins">${Object.entries(set).map(([k,v])=>`<button class="sk ${k===cur?'on':''}" style="background:${v[1]};color:${v[2]}" data-act="setskin" data-k="${k}">${v[0]}<i><u style="background:${v[2]}"></u><u style="background:${v[3]}"></u></i></button>`).join('')}</div>`}
@@ -1053,15 +1090,15 @@ const ACT={
  pauseAuto:(d,el)=>{AUTO=false;el.remove();toast('⏸ Modo automático en pausa');const b=$('.next.auto');if(b)b.classList.remove('auto');clearTimers()},
  letter:(d,el)=>{el.style.setProperty('--h',Math.floor(Math.random()*360));el.animate([{scale:1},{scale:1.7,rotate:'20deg'},{scale:1}],{duration:500});sfx.pop()},
  skins:()=>{
-   if(ctx==='kid'){const k=S.kids[kid];modal(`<h3>🎨 Estilo de ${esc(kid)}</h3>${skinGrid(KID_SKINS,k.skin)}<h3 style="margin-top:16px">Tu personaje</h3><div class="avs">${AVATARS.map(a=>`<button class="${a===k.av?'on':''}" data-act="setav" data-a="${a}">${a}</button>`).join('')}</div>`)}
-   else modal(`<h3>🎨 Estilo del reino</h3>${skinGrid(ADULT_SKINS,S.adult.skin)}`)},
+   if(ctx==='kid'){const k=S.kids[kid];modal(`<h3>🎨 Estilo de ${esc(kid)}</h3>${skinGrid(KID_SKINS,k.skin)}<h3 style="margin-top:16px">Tu personaje</h3><div class="avs">${AVATARS.map(a=>`<button class="${a===k.av?'on':''}" data-act="setav" data-a="${a}">${a}</button>`).join('')}</div>${voicePanel()}`)}
+   else modal(`<h3>🎨 Estilo del reino</h3>${skinGrid(ADULT_SKINS,S.adult.skin)}${voicePanel()}`)},
  setskin:d=>{if(ctx==='kid'){S.kids[kid].skin=d.k;save();kidHub()}else{S.adult.skin=d.k;save();closeModal();$('.shead')?settings():realm()}confetti(innerWidth/2,innerHeight/2,80)},
  setav:d=>{S.kids[kid].av=d.a;save();kidHub();sfx.win()},
  zone:d=>startLesson({who:'kid',zone:d.z,pool:K[d.z]}),
  continue:()=>{const k=S.kids[kid];const z=Object.keys(K).sort((a,b)=>(k.zones[a]||0)-(k.zones[b]||0))[0];startLesson({who:'kid',zone:z,pool:K[z]})},
  mission:()=>{const r=recRegion();startLesson({who:'adult',region:r,pool:REG[r]})},
  region:d=>startLesson({who:'adult',region:d.r,pool:REG[d.r]}),
- bip:()=>{const j=R(JOKES);bipSay(j[0],j[1]);say(j[0]);sfx.pop()},
+ bip:()=>{const j=R(JOKES);bipSay(j[0],j[1]);say(j[0],'en-US',null,'bip');sfx.pop()},
  sayitem:(d,el)=>{say(d.t);el.classList.remove('boing');void el.offsetWidth;el.classList.add('boing');bipSay(d.t[0].toUpperCase()+d.t.slice(1)+'!',wes(d.t)?'= '+wes(d.t):'');sfx.pop()},
  sayw:d=>say(d.t),
  sayslow:d=>say(d.t,'en-US',.55),
@@ -1077,6 +1114,9 @@ const ACT={
  mic,saidit:()=>answer(true,''),
  chest:()=>{const c=$('#chest');if(!c||c.dataset.open)return;c.dataset.open=1;c.innerHTML=L&&L.who==='adult'?'💰':'🎉';$('#loot').hidden=false;const r=c.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2,160);fireworks(3);shake()},
  closeModal,
+ vTry:d=>{const v=voices.find(v=>v.voiceURI===d.u);try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(ctx==='adult'?'Welcome to the castle. Your dragon is waiting.':"Hi! I'm Bip. Let's play and learn English!");u.lang=v?v.lang:'en-US';if(v)u.voice=v;const r=ROLE[ctx==='adult'?'adult':'kid'];u.rate=r.rate;u.pitch=r.pitch;speechSynthesis.speak(u)}catch(e){}},
+ vPick:d=>{S.voice=Object.assign({},S.voice,{en:d.u});save();toast('🔊 Voz elegida');reopenVoice()},
+ vAuto:()=>{if(S.voice)delete S.voice.en;save();toast('🔊 Elijo la mejor voz automáticamente');reopenVoice()},
  duoYes:()=>duoNext(D.hint?.5:1),duoNo:()=>duoNext(0),
  duoHint:()=>{D.hint=1;say(D.q[D.r][0])},
  reveal:(d,el)=>{el.style.filter='none';say(el.textContent)},
