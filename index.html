@@ -244,6 +244,8 @@ h1,h2,h3{font-family:var(--fh);line-height:1.08;margin:0;text-wrap:balance}
 .mc.ok strong{border-color:#22c55e;background:color-mix(in srgb,#22c55e,var(--card) 70%)}
 .spellbox{position:absolute;top:18px;left:0;right:0;display:grid;justify-items:center;gap:10px;z-index:2}
 .spellbox .big{font-size:76px;line-height:1}
+.spellbox .rep{width:auto;height:auto;border-radius:999px;padding:10px 22px;font:700 20px var(--fh)}
+.spellbox{grid-template-columns:auto auto;justify-content:center;align-items:center}.spellbox .big,.spellbox .slotsL{grid-column:1/-1;justify-self:center}
 .slotsL{display:flex;gap:8px}
 .slotsL span{width:52px;height:60px;border-radius:12px;border:3px dashed var(--line);display:grid;place-items:center;font:700 32px var(--fh);background:var(--card)}
 .slotsL span.f{border-style:solid;border-color:var(--a3);animation:boing .4s}
@@ -824,8 +826,8 @@ function gSpell(){
   const next=()=>{
     if(wi>=list.length)return miniDone(3,'¡Palabras descifradas!');
     const w=list[wi],letters=[...w[1]];let pos=0;
-    A.innerHTML=`<div class="spellbox"><div class="big">${w[0]}</div><div class="slotsL">${letters.map(()=>'<span></span>').join('')}</div></div>`;
-    $('#mh').innerHTML=L.who==='kid'?'Toca las burbujas en orden para escribir la palabra 🔊':'Toca las letras en orden para descifrar la palabra';
+    A.innerHTML=`<div class="spellbox"><button class="big" data-act="sayw" data-t="${esc(w[1])}" aria-label="Escuchar">${w[0]}</button><button class="spk rep" data-act="sayw" data-t="${esc(w[1])}">🔊 Repetir</button><button class="ghost rep" data-act="sayslow" data-t="${esc(w[1])}">🐢 Lento</button><div class="slotsL">${letters.map(()=>'<span></span>').join('')}</div></div>`;
+    $('#mh').innerHTML=L.who==='kid'?'Toca las burbujas en orden para escribir la palabra':'Toca las letras en orden para descifrar la palabra';
     $('#ms').textContent=`${wi+1}/${list.length}`;$('#mt').textContent='';say(w[1]);
     const W=A.clientWidth,H=A.clientHeight;
     shuf(letters.map((l,i)=>({l,i}))).forEach((o,j)=>{const b=document.createElement('button');b.className='bub';b.textContent=o.l.toUpperCase();b.style.setProperty('--d',(j*.3)+'s');
