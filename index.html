@@ -372,6 +372,32 @@ table.par td:not(:first-child){text-align:right}
 .adult .opt.pic{font-size:60px}
 .skin-pasarela .tabs button.on{background:var(--a2);color:#000}
 @media(max-width:760px){.hero{grid-template-columns:1fr}.loot{grid-template-columns:1fr 1fr}.tabs button{min-width:64px;padding:6px 10px}}
+.dash{max-width:1100px;margin:0 auto;padding:16px 16px 40px;display:grid;gap:16px}
+.dhead{display:flex;gap:14px;align-items:center}.dhead h1{font-size:clamp(30px,4vw,42px)}.dhead small{opacity:.7}
+.dtabs{display:flex;gap:8px;flex-wrap:wrap}
+.dtabs button{padding:12px 22px;border-radius:999px;background:var(--card);border:2px solid var(--line);font:800 19px var(--fh)}
+.dtabs button.on{background:var(--dark);border-color:var(--dark);color:#fff}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:12px}
+.dstat{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;display:grid;gap:2px}
+.dstat small{font-weight:700;opacity:.7}.dstat b{font:800 38px/1.1 var(--fh);font-variant-numeric:tabular-nums}.dstat span{opacity:.8;font-size:15px}
+.dstat.big{background:var(--dark);color:#fff;border:0}.dstat.big .tbar{background:rgba(255,255,255,.25)}.dstat.big .tbar i{background:var(--a3)}
+.dcard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
+.dcard h3{font:800 21px var(--fh);margin:0 0 12px}.dcard h3 small{font-weight:500;opacity:.6;font-size:14px}
+.dnote{margin:0;opacity:.75;font-size:15px}
+.recs{list-style:none;margin:0;padding:0;display:grid;gap:10px}.recs li{display:flex;gap:12px;align-items:flex-start}.recs span{font-size:26px;line-height:1}.recs p{margin:0}
+.chart{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;height:180px;align-items:end;padding-top:20px}
+.chart .col{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;border-radius:6px;cursor:default}
+.chart .col:hover{background:var(--bg)}
+.chart .col i{display:block;width:70%;max-width:26px;min-height:0;background:var(--a1);border-radius:4px 4px 0 0}
+.chart .col em{position:absolute;top:-4px;font:700 13px var(--fb);font-style:normal}
+.chart .col small{font-size:12px;opacity:.7;text-transform:uppercase}
+.trow{display:grid;grid-template-columns:40px minmax(0,200px) minmax(0,1fr) 54px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.trow:last-child{border:0}.trow.lock{opacity:.5}.te{font-size:28px}.tn{font-weight:800}.tn small{display:block;font-weight:500;opacity:.7}
+.trow b{text-align:right;font-variant-numeric:tabular-nums}
+.tbar{height:12px;border-radius:6px;background:var(--bg2);overflow:hidden}.tbar i{display:block;height:100%;background:var(--a1);border-radius:6px}
+.wchips{display:flex;flex-wrap:wrap;gap:8px}.wchips span{background:var(--bg2);border-radius:999px;padding:6px 12px;font-weight:700}.wchips small{font-weight:500;opacity:.7}
+.wchips.weak span{background:color-mix(in srgb,var(--a2),transparent 70%)}.wchips u{text-decoration:none;color:var(--a2);margin-left:6px;letter-spacing:1px}
+@media(max-width:600px){.trow{grid-template-columns:32px minmax(0,1fr) 44px}.trow .tbar{grid-column:2/-1;grid-row:2}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
 </style>
 </head>
@@ -668,7 +694,7 @@ function home(){
     ${['Alex','Luc'].map((n,i)=>`<button class="door" style="--d:${i*.4}s" data-act="kid" data-n="${n}"><span class="av">${S.kids[n].av}</span><b>${n}</b><small>${S.kids[n].stars} ⭐ · ${S.kids[n].done} lecciones</small></button>`).join('')}
     <button class="door adult" style="--d:.8s" data-act="adult"><span class="av">👑</span><b>${S.adult.onb?esc(S.adult.onb.name||'Adulto'):'Adulto'}</b><small>${S.adult.onb?esc(titleFor()):'Empieza tu reino'}</small></button>
    </div>
-   <button class="ghost" data-act="parents">👪 Zona de padres</button>
+   <button class="ghost" data-act="parents">📊 Progreso (padres)</button>
   </main>`;
 }
 
@@ -778,11 +804,16 @@ function startLesson(o){
       :o.zone==='canciones'?['pic','karaoke','build','M','listen','karaoke','speak','M','pic','build','karaoke']:['pic','listen','build','M','meaning','fill','speak','M','pic','build','listen'])
     :['meaning','build','listen','M','fill','speak','pic','M','build','meaning','speak'];
   const minis=shuf(basic?['pop','mole','memory','catch','spell']:['pop','catch','memory','spell','mole']);let mi=0;
-  L={...o,l1,basic,q:seq.map(t=>t==='M'?{t:'M',g:minis[mi++%minis.length]}:make(t)),i:0,ok:0,bad:0,combo:0,done:0,stars:0,answered:false,built:[]};
+  L={...o,t0:Date.now(),l1,basic,q:seq.map(t=>t==='M'?{t:'M',g:minis[mi++%minis.length]}:make(t)),i:0,ok:0,bad:0,combo:0,done:0,stars:0,answered:false,built:[]};
   const rv=[...(st.weak||[])].sort((a,b)=>b.n-a.n).slice(0,l1?3:2).map(reviewEx).filter(Boolean);
   rv.forEach((r,i)=>L.q.splice(Math.min(1+i*4,L.q.length),0,r));
   showEx();
 }
+function stat(o){o.stats=o.stats||{a:0,o:0,days:{},zones:{},speak:0};return o.stats}
+function dayOf(st,d){return st.days[d]=st.days[d]||{a:0,o:0,l:0,m:0}}
+function statAns(e,ok){const st=stat(wStore()),d=dayOf(st,today()),zk=L.zone||L.region,z=st.zones[zk]=st.zones[zk]||{a:0,o:0};
+  st.a++;d.a++;z.a++;if(ok){st.o++;d.o++;z.o++}if(e.t==='speak')st.speak++;save()}
+function statLesson(){const st=stat(wStore()),d=dayOf(st,today());d.l++;d.m+=Math.min(30,Math.max(1,Math.round((Date.now()-(L.t0||Date.now()))/60000)));save()}
 function findW(k){for(const set of [B,K,REG])for(const p of Object.values(set)){const w=p.words.find(x=>x[1]===k);if(w)return[w,p]}return null}
 function findP(k){for(const set of [B,K,REG])for(const p of Object.values(set)){const x=p.phrases.find(y=>y[0]===k);if(x)return[x,p]}return null}
 const wStore=()=>L.who==='kid'?S.kids[kid]:S.adult;
@@ -829,7 +860,7 @@ function plAnswer(v){
   $('#lf').innerHTML=`<div class="fb ${ok?'good':'bad'}" style="${v<0?'background:var(--a2)':''}"><b>${ok?'¡Lo sabías! 🎉':v<0?'¡Gracias por decirme! 💪':'¡Casi! Ahora la aprendes'}</b><span class="exp">${w[0]} <b>${esc(w[1])}</b> = ${esc(wes(w[1]))}</span><button class="next" data-act="plNext">Siguiente ➜</button></div>`;
 }
 function plEnd(){
-  const k=S.kids[kid];k.placed=true;
+  const k=S.kids[kid];k.placed=true;k.place={known:PL.known.length,total:PL.items.length,date:today()};
   PL.known.forEach(x=>{if(!k.known.includes(x))k.known.push(x)});
   PL.miss.forEach(x=>{if(!k.weak.find(y=>y.k===x))k.weak.push({t:'w',k:x,n:2})});
   const great=PL.known.length>=9;if(great&&k.basic<3)k.basic=3;save();
@@ -885,7 +916,7 @@ function explain(e){
 }
 function answer(ok,correct){
   if(L.answered)return;L.answered=true;
-  const e=L.q[L.i];markWeak(e,ok);
+  const e=L.q[L.i];markWeak(e,ok);statAns(e,ok);
   if(ok){L.ok++;L.combo++;sfx.ok();confetti(innerWidth/2,innerHeight*.78,L.combo>=3?100:45);
     if(L.combo===3||L.combo===6||L.combo===9){toast(`🔥 ¡Racha de ${L.combo}!`);shake();rain(themeChars(),14)}}
   else{L.bad++;L.combo=0;sfx.no();shake();if(!e.again){L.q.push({...e,again:1})}}
@@ -918,7 +949,7 @@ function renderBuild(){
   if(AUTO&&L.who==='kid'&&L.built.length===e.ans.length)later(()=>{if(!L.answered)ACT.check()},500);
 }
 function endLesson(){
-  clearTimers();const acc=Math.round(L.ok/((L.ok+L.bad)||1)*100);
+  clearTimers();statLesson();const acc=Math.round(L.ok/((L.ok+L.bad)||1)*100);
   if(L.who==='kid'){
     const k=S.kids[kid];const stars=5+L.stars+(acc>=90?3:0);k.stars+=stars;weekAdd(k,stars);k.done++;k.zones[L.zone]=(k.zones[L.zone]||0)+1;const lvUp=L.basic&&++k.basic===6;
     const left=STICKERS.filter(s=>!k.stickers.includes(s));const st=left.length?R(left):R(STICKERS);if(!k.stickers.includes(st))k.stickers.push(st);
@@ -1259,6 +1290,70 @@ function parentPanel(){
    <div class="row" style="justify-content:flex-start"><button class="ghost" data-act="resetAsk">🗑️ Borrar todo el progreso</button></div>`);
 }
 
+/* ======================= PROGRESO (padres) ======================= */
+function streakOf(st){let n=0;for(let i=0;i<60;i++){const d=new Date(Date.now()-i*864e5).toISOString().slice(0,10);if(st.days[d]&&st.days[d].l){n++}else if(i>0)break}return n}
+function lastDays(st,n){return Array.from({length:n},(_,i)=>{const dt=new Date(Date.now()-(n-1-i)*864e5),d=dt.toISOString().slice(0,10);return{d,dt,v:st.days[d]||{a:0,o:0,l:0,m:0}}})}
+const pctx=(o,a)=>a?Math.round(o/a*100):null;
+function dash(n){
+  ctx='dash';AUTO=false;clearTimers();closeModal();skin('cuna');P.length=0;
+  const tabs=`<div class="dtabs">${['Alex','Luc'].map(x=>`<button class="${x===n?'on':''}" data-act="dashTab" data-n="${x}">${S.kids[x].av} ${x}</button>`).join('')}<button class="${n==='Adulto'?'on':''}" data-act="dashTab" data-n="Adulto">👑 Adulto</button></div>`;
+  let body='';
+  if(n==='Adulto')body=dashAdult();else body=dashKid(n);
+  app.innerHTML=`<div class="dash"><header class="dhead"><button class="icon" data-act="home" aria-label="Inicio">🏠</button><div><h1>📊 Progreso</h1><small>Solo para padres · los datos son de este dispositivo</small></div></header>${tabs}${body}
+   <section class="dcard"><h3>Herramientas</h3><div class="row" style="justify-content:flex-start">${n!=='Adulto'?`<button class="ghost" data-act="placeAgain" data-n="${n}">🔍 Repetir el test de ${n}</button>`:''}<button class="ghost" data-act="dashRaw">📋 Tabla resumen</button><button class="ghost" data-act="resetAsk">🗑️ Borrar todo el progreso</button></div></section></div>`;
+}
+function dashKid(n){
+  const k=S.kids[n],st=stat(k),lv1=level1(k);
+  const weak=new Set(k.weak.map(x=>x.k));
+  const allW=[...Object.values(B),...Object.values(K)].flatMap(p=>p.words.map(w=>w[1]));
+  const mastered=[...new Set(k.known)].filter(w=>!weak.has(w)&&allW.includes(w));
+  const acc=pctx(st.o,st.a),days=lastDays(st,14),wk=days.slice(-7),mins=wk.reduce((a,x)=>a+x.v.m,0),streak=streakOf(st);
+  const last=Object.keys(st.days).filter(d=>st.days[d].l).sort().pop();const idle=last?Math.round((Date.parse(today())-Date.parse(last))/864e5):null;
+  const max=Math.max(1,...days.map(x=>x.v.l));
+  const topics=[...BORD.map(z=>[z,B[z],1]),...ZORD.map(z=>[z,K[z],2])];
+  const tRow=([z,p,lv])=>{const tot=p.words.length,kn=p.words.filter(w=>mastered.includes(w[1])).length,zs=st.zones[z]||{a:0,o:0},za=pctx(zs.o,zs.a),locked=lv===2&&lv1;
+    return`<div class="trow ${locked?'lock':''}"><span class="te">${p.e}</span><span class="tn">${p.n}${locked?' 🔒':''}<small>${k.zones[z]||0} ${(k.zones[z]||0)===1?'lección':'lecciones'}${za!=null?' · '+za+'% aciertos':''}</small></span><div class="tbar" title="${kn} de ${tot} palabras dominadas"><i style="width:${kn/tot*100}%"></i></div><b>${kn}/${tot}</b></div>`};
+  const em=w=>{const f=findW(w);return f?f[0][0]:''};
+  const rec=[];
+  if(!k.placed)rec.push(['🔍',`${n} todavía no ha hecho el test inicial. Se le aparece al entrar.`]);
+  if(idle!=null&&idle>=2)rec.push(['⏰',`No juega desde hace ${idle} días. 10 minutos al día funcionan mejor que una sesión larga a la semana.`]);
+  if(idle==null&&k.placed)rec.push(['▶️',`Todavía no ha completado lecciones. El botón PLAY lo lleva paso a paso.`]);
+  if(k.weak.length)rec.push(['🔁',`Le están costando: ${k.weak.slice(0,6).map(x=>(em(x.k)+' '+esc(x.k))).join(', ')}. La app se las repite sola; también pueden practicarlas en voz alta en casa.`]);
+  const hard=topics.map(([z,p])=>[p,st.zones[z]]).filter(([p,zs])=>zs&&zs.a>=6&&zs.o/zs.a<.6);
+  hard.forEach(([p,zs])=>rec.push(['🧩',`${p.e} ${p.n}: acierta ${pctx(zs.o,zs.a)}%. Conviene repetir ese tema desde la isla.`]));
+  if(lv1&&k.basic>=4)rec.push(['🏆',`¡Le faltan ${6-k.basic} temas para el Nivel 2!`]);
+  if(st.a>=20&&st.speak<3)rec.push(['🎤','Casi no practica en voz alta. Anímalo a decir las palabras antes de tocar «¡Ya lo dije!».']);
+  if(!rec.length)rec.push(['🌟','Va muy bien. Sigan con el ritmo actual.']);
+  return`
+  <section class="dgrid">
+   <div class="dstat big"><small>Nivel</small><b>${lv1?'1':'2'}</b><span>${lv1?`Primeros pasos · ${k.basic}/6 temas`:'Cine, Canciones y Juegos'}</span><div class="tbar"><i style="width:${lv1?k.basic/6*100:100}%"></i></div></div>
+   <div class="dstat"><small>Palabras dominadas</small><b>${mastered.length}</b><span>de ${allW.length} en la app</span></div>
+   <div class="dstat"><small>Aciertos</small><b>${acc!=null?acc+'%':'—'}</b><span>${st.a} respuestas</span></div>
+   <div class="dstat"><small>Lecciones</small><b>${k.done}</b><span>${streak?`🔥 ${streak} día${streak>1?'s':''} seguidos`:'sin racha activa'}</span></div>
+   <div class="dstat"><small>Tiempo esta semana</small><b>${mins} min</b><span>${wk.filter(x=>x.v.l).length} de 7 días jugó</span></div>
+   <div class="dstat"><small>Por repasar</small><b>${k.weak.length}</b><span>palabras o frases</span></div>
+  </section>
+  ${k.place?`<p class="dnote">🔍 En el test inicial (${esc(k.place.date)}) sabía ${k.place.known} de ${k.place.total} palabras.</p>`:''}
+  <section class="dcard"><h3>💡 Qué hacer ahora</h3><ul class="recs">${rec.map(r=>`<li><span>${r[0]}</span><p>${r[1]}</p></li>`).join('')}</ul></section>
+  <section class="dcard"><h3>Lecciones por día · últimos 14 días</h3>
+   <div class="chart">${days.map(x=>`<div class="col" title="${x.dt.toLocaleDateString('es',{weekday:'short',day:'numeric',month:'short'})}: ${x.v.l} lecciones, ${x.v.m} min${x.v.a?', '+pctx(x.v.o,x.v.a)+'% aciertos':''}"><i style="height:${x.v.l/max*100}%"></i>${x.v.l?`<em>${x.v.l}</em>`:''}<small>${x.dt.toLocaleDateString('es',{weekday:'narrow'})}</small></div>`).join('')}</div></section>
+  <section class="dcard"><h3>Avance por tema <small>palabras dominadas</small></h3>${topics.map(tRow).join('')}</section>
+  <section class="dcard"><h3>✅ Ya domina (${mastered.length})</h3><div class="wchips">${mastered.length?mastered.map(w=>`<span>${em(w)} ${esc(w)} <small>${esc(wes(w))}</small></span>`).join(''):'<p>Aún ninguna. Aparecen aquí cuando las acierta y no están en repaso.</p>'}</div></section>
+  <section class="dcard"><h3>🔁 Por repasar (${k.weak.length})</h3><div class="wchips weak">${k.weak.length?k.weak.map(x=>`<span>${em(x.k)} ${esc(x.k)} <small>${esc(wes(x.k)||(findP(x.k)||[[0,'']])[0][1])}</small><u>${'●'.repeat(x.n)}</u></span>`).join(''):'<p>Nada pendiente. 🎉</p>'}</div><p class="dnote">Los puntos indican cuántas veces más debe acertarla para salir de la lista.</p></section>
+  <section class="dcard"><h3>Alex y Luc</h3><table class="par"><tr><th></th><th>Nivel</th><th>Dominadas</th><th>Aciertos</th><th>Lecciones</th><th>Esta semana</th></tr>${['Alex','Luc'].map(x=>{const kk=S.kids[x],ss=stat(kk),w=new Set(kk.weak.map(y=>y.k)),m=[...new Set(kk.known)].filter(y=>!w.has(y)).length,a=pctx(ss.o,ss.a);return`<tr><td>${kk.av} ${x}</td><td>${level1(kk)?'1 ('+kk.basic+'/6)':'2'}</td><td>${m}</td><td>${a!=null?a+'%':'—'}</td><td>${kk.done}</td><td>${lastDays(ss,7).reduce((s2,y)=>s2+y.v.m,0)} min</td></tr>`}).join('')}</table></section>`;
+}
+function dashAdult(){
+  const A=S.adult,st=stat(A),acc=pctx(st.o,st.a),d=dStage();
+  if(!A.onb)return`<section class="dcard"><p>El perfil adulto todavía no se ha creado.</p></section>`;
+  return`<section class="dgrid">
+   <div class="dstat big"><small>Título</small><b style="font-size:26px">${esc(titleFor())}</b><span>${A.xp} XP</span></div>
+   <div class="dstat"><small>Dragón</small><b>${d[1]}</b><span>${esc(d[2])}</span></div>
+   <div class="dstat"><small>Aciertos</small><b>${acc!=null?acc+'%':'—'}</b><span>${st.a} respuestas</span></div>
+   <div class="dstat"><small>Lecciones</small><b>${A.done}</b><span>🔥 ${A.streak} días de racha</span></div></section>
+  <section class="dcard"><h3>Regiones</h3>${Object.entries(REG).map(([k,r])=>{const c=A.regions[k]||0,zs=st.zones[k],za=zs?pctx(zs.o,zs.a):null;return`<div class="trow"><span class="te">${r.e}</span><span class="tn">${r.n}<small>${za!=null?za+'% aciertos':'sin datos'}</small></span><div class="tbar"><i style="width:${Math.min(100,c/5*100)}%"></i></div><b>${c}</b></div>`}).join('')}</section>
+  <section class="dcard"><h3>🔁 Por repasar (${A.weak.length})</h3><div class="wchips weak">${A.weak.map(x=>`<span>${esc(x.k)}</span>`).join('')||'<p>Nada pendiente.</p>'}</div></section>`;
+}
+
 /* ======================= ACCIONES ======================= */
 const ACT={
  home,kidhub:()=>kidHub(),adult,parents,realm,ach,settings,friends,stickers,duo,msgs,chat,
@@ -1317,7 +1412,8 @@ const ACT={
  housePick:()=>houses(),
  redoOnb:()=>{OB=null;onb(0)},
  dragonTap:()=>{const d=$('.dragon .d');d.animate([{scale:1},{scale:1.3,rotate:'-12deg'},{scale:1}],{duration:600});rain(['🔥','✨'],18);say(R(['Roar!','The dragon is awake!','Fire!']))},
- gateOk:()=>{if(+$('#gi').value===gate)parentPanel();else{$('#ge').textContent='Esa no es. Inténtalo otra vez.';sfx.no()}},
+ gateOk:()=>{if(+$('#gi').value===gate){closeModal();dash('Alex')}else{$('#ge').textContent='Esa no es. Inténtalo otra vez.';sfx.no()}},
+ dashTab:d=>dash(d.n),dashRaw:()=>parentPanel(),
  resetAsk:()=>modal(`<h3>¿Borrar todo?</h3><p>Se pierden estrellas, stickers, la isla, los mensajes y el reino. No se puede deshacer.</p><div class="row" style="justify-content:flex-start"><button class="ghost" data-act="closeModal">Cancelar</button><button class="btnA" style="background:#b91c1c" data-act="resetYes">Sí, borrar</button></div>`),
  resetYes:()=>{S=fresh();save();CH=[];closeModal();home()}
 };
@@ -1327,6 +1423,8 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('pointerdown',()=>{lastTouch=Date.now()},{passive:true});
 home();
+if(location.hash==='#progreso')parents();
+addEventListener('hashchange',()=>{if(location.hash==='#progreso')parents()});
 }
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}</script>
