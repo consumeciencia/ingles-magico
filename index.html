@@ -207,6 +207,8 @@ h1,h2,h3{font-family:var(--fh);line-height:1.08;margin:0;text-wrap:balance}
 .fb.good{background:#22c55e;color:#fff}.fb.bad{background:#ef4444;color:#fff}
 .fb b{font:700 28px var(--fh)}
 .fb span{grid-column:1}
+.fb .exp{font-size:21px;line-height:1.35;background:rgba(0,0,0,.18);border-radius:12px;padding:8px 12px}
+.opt .cap{display:block;font:600 15px/1.25 var(--fb);margin-top:6px;opacity:.95}
 .fb .next{grid-row:1/span 2;grid-column:2;width:auto;padding:18px 30px;background:#fff;color:#222}
 @keyframes slideUp{from{translate:0 80px;opacity:0}}
 .speakrow{display:flex;justify-content:center}
@@ -423,6 +425,17 @@ const REG={
   words:[['🐉','dragon'],['🔥','fire'],['🏰','castle'],['👑','crown'],['⚔️','sword'],['🛡️','shield'],['🐺','wolf'],['❄️','snow'],['🦅','eagle'],['🗺️','map']],
   phrases:[['The dragon is awake','El dragón está despierto'],['Winter is near','El invierno está cerca'],['Our house is strong','Nuestra casa es fuerte'],['I will protect my family','Protegeré a mi familia'],['Bring me the map','Tráeme el mapa'],['Long live the queen','Larga vida a la reina'],['The crown is mine','La corona es mía'],['We ride at dawn','Cabalgamos al amanecer']]}
 };
+const WES={hero:'héroe',villain:'villano',dragon:'dragón',ghost:'fantasma',castle:'castillo',map:'mapa',treasure:'tesoro',car:'carro',dinosaur:'dinosaurio',rocket:'cohete',
+ sun:'sol',star:'estrella',moon:'luna',clap:'aplaudir',dance:'bailar',sing:'cantar',drum:'tambor',guitar:'guitarra',heart:'corazón',rainbow:'arcoíris',
+ coin:'moneda',monster:'monstruo',robot:'robot',planet:'planeta',trophy:'trofeo',key:'llave',shield:'escudo',sword:'espada',alien:'extraterrestre',egg:'huevo',
+ rose:'rosa',ring:'anillo',letter:'carta',chocolate:'chocolate',candle:'vela',flowers:'flores',wine:'vino',kiss:'beso',
+ baby:'bebé',bottle:'tetero',"teddy bear":'osito de peluche',bath:'baño',socks:'medias',book:'libro',backpack:'morral',juice:'jugo',bed:'cama',
+ pasta:'pasta',pizza:'pizza',bread:'pan',cheese:'queso',tomato:'tomate',garlic:'ajo',cake:'torta',coffee:'café',
+ dress:'vestido',heels:'tacones',bag:'bolso',scarf:'bufanda',sunglasses:'gafas de sol',hat:'sombrero',jeans:'jeans',shirt:'camisa',lipstick:'labial',coat:'abrigo',
+ happy:'feliz',sad:'triste',angry:'enojado',tired:'cansado',nervous:'nervioso',confused:'confundido',dream:'sueño',duck:'pato',couch:'sofá',pool:'piscina',
+ fire:'fuego',crown:'corona',wolf:'lobo',snow:'nieve',eagle:'águila',
+ "palm tree":'palmera',house:'casa',octopus:'pulpo',volcano:'volcán',"ferris wheel":'rueda de Chicago',tent:'carpa',turtle:'tortuga',parrot:'loro',UFO:'ovni',sunflower:'girasol',dolphin:'delfín',circus:'circo',statue:'estatua',giraffe:'jirafa',cloud:'nube',bird:'pájaro',fish:'pez',boat:'barco'};
+const wes=w=>WES[w]||'';
 const TOPIC2REG={'Romance y pareja':'romance','Maternidad':'maternidad','Comida':'comida','Moda':'moda','Emociones':'divan','Épica y dragones':'dragon'};
 const FEAR2REG={'Una cita romántica':'romance','Hablar con la profesora de mis hijos':'maternidad','Pedir en un restaurante':'comida','Ir de compras':'moda','Hablar por teléfono':'divan','Una entrevista de trabajo':'divan'};
 const HOUSES=[
@@ -639,7 +652,7 @@ function startLesson(o){
     ?(o.zone==='canciones'?['pic','karaoke','build','M','listen','karaoke','speak','M','pic','build','karaoke']:['pic','listen','build','M','meaning','fill','speak','M','pic','build','listen'])
     :['meaning','build','listen','M','fill','speak','pic','M','build','meaning','speak'];
   const minis=shuf(['pop','catch','memory','spell']);let mi=0;
-  L={...o,q:seq.map(t=>t==='M'?{t:'M',g:minis[mi++]}:make(t)),i:0,ok:0,bad:0,combo:0,done:0,stars:0,answered:false,built:[]};
+  L={...o,l1:(who==='kid'?S.kids[kid].done:S.adult.done)<5,q:seq.map(t=>t==='M'?{t:'M',g:minis[mi++]}:make(t)),i:0,ok:0,bad:0,combo:0,done:0,stars:0,answered:false,built:[]};
   showEx();
 }
 function pct(){const total=L.q.filter(x=>x.t!=='M').length;return Math.round(L.done/total*100)}
@@ -672,6 +685,17 @@ function karaoke(e){
   const ws=$$('.kara .kw');let i=0;say(e.en,'en-US',.8);
   every(()=>{ws.forEach(w=>w.classList.remove('lit'));if(i<ws.length){ws[i].classList.add('lit');i++}},430);
 }
+function explain(e){
+  const pair=(en,es)=>`<b>${esc(en)}</b> = ${esc(es)}`;
+  switch(e.t){
+   case 'pic':return`${e.w[0]} ${pair(e.w[1],wes(e.w[1]))}`;
+   case 'listen':return`🔊 Dijo: ${pair(e.ans,e.es)}`;
+   case 'meaning':return`${pair(e.en,e.ans)}`;
+   case 'build':return`🧩 ${pair(e.ans.join(' '),e.es)}`;
+   case 'fill':case 'karaoke':return`✏️ Faltaba <b>${esc(e.ans)}</b>${wes(norm(e.ans))?' ('+esc(wes(norm(e.ans)))+')':''}<br>${pair(e.en,e.es)}`;
+   case 'speak':return`🗣️ ${pair(e.en,e.es)}`;
+  }return'';
+}
 function answer(ok,correct){
   if(L.answered)return;L.answered=true;
   const e=L.q[L.i];
@@ -681,9 +705,12 @@ function answer(ok,correct){
   else{L.bad++;L.combo=0;sfx.no();shake();if(!e.again){L.q.push({...e,again:1})}}
   $$('.opt[data-r]').forEach(b=>b.classList.add('right'));
   const msg=ok?R(L.who==='kid'?PRAISE_K:PRAISE_A):(L.who==='kid'?'¡Casi! La verás otra vez 💪':'Casi. Volverá más adelante.');
-  $('#lf').innerHTML=`<div class="fb ${ok?'good':'bad'}"><b>${msg}</b>${ok?'':`<span>Respuesta: ${esc(correct)}</span>`}<button class="next" data-act="next">Continuar ➜</button></div>`;
+  const showAll=L.l1||!ok;
+  $('#lf').innerHTML=`<div class="fb ${ok?'good':'bad'}"><b>${msg}</b>${showAll?`<span class="exp">${ok?'':'La respuesta correcta: '}${explain(e)}</span>`:''}<button class="next" data-act="next">Continuar ➜</button></div>`;
+  if(L.l1&&(e.t==='pic'))$$('.opt.pic').forEach((b,i)=>{const w=e.opts[i];b.insertAdjacentHTML('beforeend',`<small class="cap">${esc(w[1])}<br>${esc(wes(w[1]))}</small>`)});
+  if(L.l1&&(e.t==='listen'||e.t==='meaning')){const src=L.pool.phrases;$$('.opt').forEach(b=>{const t=b.textContent;const p=src.find(x=>x[0]===t||x[1]===t);if(p)b.insertAdjacentHTML('beforeend',`<small class="cap">${esc(t===p[0]?p[1]:p[0])}</small>`)})}
   const c=$('.combo');if(c)c.textContent=L.combo>1?'🔥'+L.combo:'';
-  if(AUTO&&L.who==='kid'){const ms=ok?1800:3400,b=$('.next');b.classList.add('auto');b.style.setProperty('--t',ms+'ms');later(()=>ACT.next(),ms)}
+  if(AUTO&&L.who==='kid'){const ms=L.l1?(ok?3800:5200):(ok?1800:3400),b=$('.next');b.classList.add('auto');b.style.setProperty('--t',ms+'ms');later(()=>ACT.next(),ms)}
 }
 function mic(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition,h=$('#heard'),m=$('.mic'),e=L.q[L.i];
@@ -817,7 +844,7 @@ function gMemory(){
   A.querySelectorAll('.mc').forEach(b=>b.addEventListener('click',()=>{
     if(lock||b.classList.contains('on')||b.classList.contains('ok'))return;sfx.tap();b.classList.add('on');open.push(b);
     if(open.length===2){moves++;lock=true;const[a,c]=open;const ca=cards[a.dataset.i],cc=cards[c.dataset.i];
-      if(ca.k===cc.k&&ca.e!==cc.e){setTimeout(()=>{a.classList.add('ok');c.classList.add('ok');pairs++;sfx.ok();say(ca.k);const r=c.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2,30);open=[];lock=false;upd();if(pairs===6)miniDone(moves<=10?3:2,'¡Todas las parejas!')},350)}
+      if(ca.k===cc.k&&ca.e!==cc.e){setTimeout(()=>{a.classList.add('ok');c.classList.add('ok');pairs++;sfx.ok();say(ca.k);toast(`${ca.e?ca.f:cc.f} ${esc(ca.k)} = ${esc(wes(ca.k))}`,1800);const r=c.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2,30);open=[];lock=false;upd();if(pairs===6)miniDone(moves<=10?3:2,'¡Todas las parejas!')},350)}
       else setTimeout(()=>{a.classList.remove('on');c.classList.remove('on');open=[];lock=false;upd()},850)}
   }));
 }
@@ -834,7 +861,7 @@ function gSpell(){
       b.style.left=Math.max(10,Math.min(W-90,(W/(letters.length+1))*(j+1)-38+(Math.random()*40-20)))+'px';b.style.top=Math.max(190,Math.min(H-90,200+Math.random()*(H-300)))+'px';
       b.addEventListener('pointerdown',ev=>{ev.preventDefault();
         if(o.l===letters[pos]){const s=A.querySelectorAll('.slotsL span')[pos];s.textContent=o.l.toUpperCase();s.classList.add('f');pos++;sfx.pop();const r=b.getBoundingClientRect();confetti(r.left+38,r.top+38,18);b.remove();
-          if(pos===letters.length){sfx.ok();say(w[1]);wi++;setTimeout(next,900)}}
+          if(pos===letters.length){sfx.ok();say(w[1]);toast(`${w[0]} ${esc(w[1])} = ${esc(wes(w[1]))}`,1800);wi++;setTimeout(next,900)}}
         else{sfx.no();b.animate([{translate:'-8px 0'},{translate:'8px 0'},{translate:'0 0'}],{duration:300})}});
       A.appendChild(b)});
   };next();
@@ -1035,7 +1062,7 @@ const ACT={
  mission:()=>{const r=recRegion();startLesson({who:'adult',region:r,pool:REG[r]})},
  region:d=>startLesson({who:'adult',region:d.r,pool:REG[d.r]}),
  bip:()=>{const j=R(JOKES);bipSay(j[0],j[1]);say(j[0]);sfx.pop()},
- sayitem:(d,el)=>{say(d.t);el.classList.remove('boing');void el.offsetWidth;el.classList.add('boing');bipSay(d.t[0].toUpperCase()+d.t.slice(1)+'!');sfx.pop()},
+ sayitem:(d,el)=>{say(d.t);el.classList.remove('boing');void el.offsetWidth;el.classList.add('boing');bipSay(d.t[0].toUpperCase()+d.t.slice(1)+'!',wes(d.t)?'= '+wes(d.t):'');sfx.pop()},
  sayw:d=>say(d.t),
  sayslow:d=>say(d.t,'en-US',.55),
  opt:(d,el)=>{if(L.answered)return;const e=L.q[L.i];const ok=!!el.dataset.r;if(!ok)el.classList.add('wrong');
