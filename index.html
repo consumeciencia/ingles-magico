@@ -214,6 +214,31 @@ h1,h2,h3{font-family:var(--fh);line-height:1.08;margin:0;text-wrap:balance}
 .hole{position:relative;overflow:hidden;border-radius:24px;background:radial-gradient(ellipse 42% 16% at 50% 84%,#1a0e05 0 98%,transparent 100%),color-mix(in srgb,var(--bg2),#000 15%)}
 .mole{position:absolute;left:50%;bottom:12%;font-size:clamp(60px,9vw,96px);line-height:1;translate:-50% 130%;transition:translate .25s cubic-bezier(.3,1.6,.5,1)}
 .mole.up{translate:-50% 0}
+.modesw{grid-column:1/-1;display:flex;gap:6px;background:var(--card);padding:6px;border-radius:999px}
+.modesw button{flex:1;padding:12px;border-radius:999px;font:800 18px var(--fh)}
+.modesw button.on{background:var(--a1);color:#fff}
+.zone.locked{filter:grayscale(1);opacity:.45}
+.rtext{font:800 clamp(30px,5vw,48px)/1.3 var(--fh);background:var(--card);border-radius:var(--rad);padding:20px 24px;text-align:center;letter-spacing:.02em}
+.rtext.big{font-size:clamp(54px,10vw,92px);letter-spacing:.06em}
+.sy.s0{color:var(--a1)}.sy.s1{color:var(--a2)}
+.skin-caramelo .sy.s0,.skin-papel .sy.s0{color:#c0264e}.skin-caramelo .sy.s1,.skin-papel .sy.s1{color:#1b6e7a}
+.rw{border-radius:10px;padding:0 4px;transition:background .3s}
+.rw.okw{background:#22c55e;color:#fff}.rw.okw .sy{color:#fff}
+.rw.badw{background:#ef4444;color:#fff}.rw.badw .sy{color:#fff}
+.bigletter{font:800 160px/1 var(--fh);text-align:center;color:var(--a3);text-shadow:0 8px 0 var(--dark)}
+.opts.letters{grid-template-columns:repeat(3,minmax(0,1fr))}
+.opt.rl{font:800 clamp(46px,8vw,72px)/1.1 var(--fh);padding:16px}
+.opts.rwords .opt{font:800 clamp(26px,4vw,36px) var(--fh)}
+.rtile{font:800 30px var(--fh)!important;padding:14px 22px!important}
+.judge{display:grid;justify-items:center;gap:8px;opacity:.85;border-top:2px dashed var(--line);padding-top:12px}
+.judge.hl{opacity:1;background:color-mix(in srgb,var(--a3),transparent 75%);border-radius:16px;padding:12px}
+.story{background:var(--card);border-radius:var(--rad);padding:20px 26px;font:700 clamp(24px,3.6vw,32px)/1.5 var(--fh)}
+.story h3{font-size:clamp(28px,4vw,38px);margin-bottom:8px}.story p{margin:6px 0}
+.mini-st{font-size:20px;padding:10px 16px}.mini-st summary{cursor:pointer;font-weight:800}
+.balloon.rb{color:#fff;font:800 30px var(--fh);display:grid;place-items:center;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.rfall{font:800 30px var(--fh)!important;background:var(--card);padding:10px 18px;border-radius:16px;box-shadow:0 5px 0 var(--dark)}
+.rtarget{font-size:34px;color:var(--a3)}
+.mole.word{font:800 clamp(24px,3.4vw,34px) var(--fh);background:var(--card);padding:8px 14px;border-radius:14px;white-space:nowrap}
 .lfoot{min-height:110px;display:flex;align-items:center}
 .check,.next{width:100%;padding:20px;border-radius:var(--rad);font:700 24px var(--fh);background:var(--a1);color:#fff;box-shadow:0 7px 0 var(--dark)}
 .check:disabled{opacity:.4}
@@ -431,7 +456,7 @@ const fresh=()=>({
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){S=fresh()}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-for(const n of ['Alex','Luc']){const k=S.kids[n];k.weak=k.weak||[];k.known=k.known||[];k.basic=k.basic||0}
+for(const n of ['Alex','Luc']){const k=S.kids[n];k.weak=k.weak||[];k.known=k.known||[];k.basic=k.basic||0;k.mode=k.mode||'en';k.rd=k.rd||{done:0,start:0,zones:{},known:[],weak:[],placed:false}}
 S.adult.weak=S.adult.weak||[];
 
 const KID_SKINS={neon:['Neón gamer','#0d0633','#ff2bd6','#19e3ff'],selva:['Selva de dinos','#0e4a2e','#ffb703','#9ef01a'],galaxia:['Galaxia','#05051a','#8a63ff','#00e5ff'],caramelo:['Caramelo','#ffe6f0','#ff4f8b','#2fb8cc'],papel:['Papel recortado','#e6d5b1','#e4572e','#2a9d8f']};
@@ -473,6 +498,39 @@ const B={
   words:[['👀','eyes'],['👃','nose'],['👄','mouth'],['👂','ear'],['✋','hand'],['🦶','foot'],['💪','arm'],['🦷','tooth'],['🙂','face'],['💇','hair']],
   phrases:[['Touch your nose','Toca tu nariz'],['Clap your hands','Aplaude'],['Open your mouth','Abre la boca'],['I have two eyes','Tengo dos ojos'],['Wash your hands','Lávate las manos']]}
 };
+const RT={
+ vocales:{n:'Las vocales',e:'🅰️',s:'a, e, i, o, u',kind:'vowel',
+  words:[['✈️','avión'],['🐝','abeja'],['🌳','árbol'],['🐘','elefante'],['⭐','estrella'],['🧹','escoba'],['🏝️','isla'],['🧲','imán'],['⛪','iglesia'],['🐻','oso'],['👁️','ojo'],['🐑','oveja'],['🍇','uva'],['1️⃣','uno'],['💅','uña']]},
+ mp:{n:'Sílabas con M y P',e:'🐒',s:'ma me mi mo mu · pa pe pi po pu',kind:'syl',
+  words:[['🐒','mono','mo-no'],['🗺️','mapa','ma-pa'],['🏍️','moto','mo-to'],['🦆','pato','pa-to'],['🥔','papa','pa-pa'],['👩','mamá','ma-má'],['👨','papá','pa-pá'],['🐆','puma','pu-ma'],['🦶','pie','pie'],['🥒','pepino','pe-pi-no']]},
+ sl:{n:'Sílabas con S y L',e:'🐸',s:'sa se si so su · la le li lo lu',kind:'syl',
+  words:[['🐸','sapo','sa-po'],['🍲','sopa','so-pa'],['☀️','sol','sol'],['🐻','oso','o-so'],['🌙','luna','lu-na'],['🔍','lupa','lu-pa'],['🍋','lima','li-ma'],['💇','pelo','pe-lo'],['⚽','pelota','pe-lo-ta'],['🍭','paleta','pa-le-ta']]},
+ tnd:{n:'Sílabas con T, N y D',e:'🍅',s:'ta te ti to tu · na ne ni… · da de di…',kind:'syl',
+  words:[['🍅','tomate','to-ma-te'],['☁️','nube','nu-be'],['🪺','nido','ni-do'],['☝️','dedo','de-do'],['🎲','dado','da-do'],['🛁','tina','ti-na'],['🪙','moneda','mo-ne-da'],['🍴','tenedor','te-ne-dor'],['👧','nena','ne-na'],['🦷','diente','dien-te']]},
+ crb:{n:'Sílabas con C, R y B',e:'🏠',s:'ca co cu · ra re ri… · ba be bi…',kind:'syl',
+  words:[['🏠','casa','ca-sa'],['🛏️','cama','ca-ma'],['🥥','coco','co-co'],['👄','boca','bo-ca'],['👢','bota','bo-ta'],['👶','bebé','be-bé'],['🐸','rana','ra-na'],['🐭','ratón','ra-tón'],['🌹','rosa','ro-sa'],['👕','ropa','ro-pa']]},
+ gvf:{n:'Sílabas con G, V y F',e:'🐱',s:'ga go gu · va ve vi… · fa fe fi…',kind:'syl',
+  words:[['🐱','gato','ga-to'],['💧','gota','go-ta'],['🐄','vaca','va-ca'],['🦭','foca','fo-ca'],['🕯️','vela','ve-la'],['🔥','fuego','fue-go'],['🦍','gorila','go-ri-la'],['🥛','vaso','va-so'],['🎈','globo','glo-bo'],['🍇','uva','u-va']]},
+ nch:{n:'Ñ, CH y LL',e:'🍍',s:'ña ñe ñi… · cha che chi… · lla lle lli…',kind:'syl',
+  words:[['🍍','piña','pi-ña'],['👦','niño','ni-ño'],['🕷️','araña','a-ra-ña'],['💅','uña','u-ña'],['🍼','leche','le-che'],['🚗','coche','co-che'],['🔑','llave','lla-ve'],['🌧️','lluvia','llu-via'],['🐔','pollo','po-llo'],['🪑','silla','si-lla']]},
+ frases:{n:'Frases cortas',e:'💬',s:'Lee frases completas',kind:'sent',
+  words:[['🐱','El gato toma leche.'],['🐸','El sapo salta.'],['🌙','La luna sale de noche.'],['🍕','Me gusta la pizza.'],['🐶','Mi perro es café.'],['☀️','El sol es amarillo.'],['🎈','El globo es rojo.'],['🛏️','Me voy a la cama.'],['🐄','La vaca da leche.'],['⚽','Pateo la pelota.']]},
+ cuentos:{n:'Cuentos',e:'📚',s:'Lee y comprende',kind:'story',words:[],
+  stories:[
+   {e:'🐸',t:'El sapo Pepo',x:['Pepo es un sapo verde.','Vive en una laguna.','Le gusta saltar y comer moscas.','Un día saltó muy alto y vio la luna.'],q:[['¿De qué color es Pepo?','Verde','Rojo','Azul'],['¿Dónde vive Pepo?','En una laguna','En una casa','En la luna'],['¿Qué le gusta comer?','Moscas','Pizza','Pasto']]},
+   {e:'🐱',t:'Mimi y la pelota',x:['Mimi es una gata pequeña.','Tiene una pelota roja.','La pelota rodó debajo de la cama.','Mimi la sacó con su pata.'],q:[['¿Qué es Mimi?','Una gata','Una perra','Una vaca'],['¿De qué color es la pelota?','Roja','Verde','Amarilla'],['¿Dónde quedó la pelota?','Debajo de la cama','En el techo','En la mesa']]},
+   {e:'🚀',t:'Viaje al espacio',x:['Luc sube a un cohete.','Cuenta: tres, dos, uno.','El cohete sube y sube.','Desde arriba, Luc ve la Tierra azul.'],q:[['¿En qué viaja Luc?','En un cohete','En un barco','En un tren'],['¿Qué número dice al final?','Uno','Diez','Cinco'],['¿De qué color ve la Tierra?','Azul','Roja','Negra']]},
+   {e:'🦖',t:'El dino de Alex',x:['Alex tiene un dinosaurio de juguete.','Se llama Rex.','Rex es grande y verde.','Alex y Rex juegan en el parque.'],q:[['¿Cómo se llama el dinosaurio?','Rex','Pepo','Mimi'],['¿Cómo es Rex?','Grande y verde','Pequeño y rosado','Azul y triste'],['¿Dónde juegan?','En el parque','En el mar','En la luna']]}]}
+};
+const RORD=['vocales','mp','sl','tnd','crb','gvf','nch','frases','cuentos'];
+const RSYLW=RORD.filter(z=>RT[z].kind==='syl').flatMap(z=>RT[z].words);
+const rTopic=rd=>Math.min(RORD.length-1,(rd.start||0)+Math.floor(rd.done/2));
+const rNorm=x=>String(x).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-zñ ]/g,' ').replace(/\s+/g,' ').trim();
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+const sylHTML=w=>w[2]?w[2].split('-').map((x,i)=>`<span class="sy s${i%2}">${esc(x)}</span>`).join(''):esc(w[1]);
+const sylTxt=w=>w[2]?w[2].replace(/-/g,'·'):w[1];
+const CHISTES=[['¿Qué le dice un pez a otro pez?','¡Nada!'],['¿Qué le dijo el 1 al 10?','Para ser como yo, tienes que ser sincero.'],['¿Por qué el libro de matemáticas está triste?','Porque tiene muchos problemas.'],['¿Cuál es el animal más antiguo?','La cebra, porque está en blanco y negro.'],['¿Qué hace una abeja en el gimnasio?','¡Zum-ba!'],['¿Qué le dijo una uva verde a una morada?','¡Respira, respira!']];
+const MSGP_ES=['¡Hola!','¡Vamos a jugar!','Eres genial','¡Bien hecho!','Estoy feliz','¿Me ayudas?','Nos vemos','Me gusta tu dibujo','¡Qué risa!','Eres mi mejor amigo'];
 const BORD=['colores','animales','numeros','saludos','comida','cuerpo'];
 const level1=k=>(k.basic||0)<6;
 const REG={
@@ -578,6 +636,7 @@ const capi=x=>x?x[0].toUpperCase()+x.slice(1):x;
 const engOf=e=>e.w?e.w[1]:e.t==='listen'?e.ans:e.t==='build'?e.ans.join(' '):e.en;
 function introSpeech(e){
   const H=[],es=x=>H.push([ES,x]),en=x=>H.push([EN,x]);
+  if(L.who==='reader'){const t=RINTRO[e.t];if(e.rev)es('Esta la repasamos. ¡Tú puedes!');if(t)es(typeof t==='function'?t(e):t);return H}
   if(L.who!=='kid'){if(e.t==='listen')en(e.ans);if(e.t==='pic')en(e.w[1]);return H}
   const l1=L.l1;
   if(e.rev)es(R(['Esta la repasamos, ¡tú puedes!','Vamos a practicar esta otra vez.']));
@@ -594,7 +653,9 @@ function introSpeech(e){
   return H;
 }
 function feedbackSpeech(e,ok){
-  const H=[],es=x=>H.push([ES,x]),en=x=>H.push([EN,x]);const eng=engOf(e);
+  const H=[],es=x=>H.push([ES,x]),en=x=>H.push([EN,x]);
+  if(L.who==='reader'){es(ok?R(['¡Muy bien!','¡Excelente lectura!','¡Eso es!','¡Lo lograste!']):R(['Casi. Mira bien las letras.','Por poquito. Fíjate en la respuesta.','No pasa nada, la vamos a repetir.']));return H}
+  const eng=engOf(e);
   if(L.who!=='kid'){if(!ok||e.w)en(eng);return H}
   const word=!!e.w,mean=word?wes(e.w[1]):(e.es||(e.t==='meaning'?e.ans:''));
   if(ok){en(R(PRAISE_KE));
@@ -674,7 +735,7 @@ let ctx='home',kid=null,L=null,lastTouch=Date.now(),AUTO=false,autoRun=0;
 const skin=k=>{document.body.className='skin-'+k};
 const kidTabs=on=>`<nav class="tabs">
   <button class="${on==='isla'?'on':''}" data-act="kidhub">🏝️<small>Isla</small></button>
-  <button data-act="play">▶️<small>Play</small></button>
+  <button data-act="playAny">▶️<small>Play</small></button>
   <button class="${on==='stk'?'on':''}" data-act="stickers">🌟<small>Colección</small></button>
   <button class="${on==='friends'?'on':''}" data-act="friends">🤝<small>Amigos</small></button></nav>`;
 const adultTabs=on=>`<nav class="tabs">
@@ -716,7 +777,9 @@ const wk=n=>S.kids[n].wk===week()?S.kids[n].week:0;
 
 function kidHub(n){
   if(n)kid=n;ctx='kid';AUTO=false;clearTimers();closeModal();const k=S.kids[kid];skin(k.skin);
-  if(!k.placed)return placement();
+  if(k.mode==='es'&&!k.rd.placed)return rPlacement();
+  if(k.mode!=='es'&&!k.placed)return placement();
+  const RDm=k.mode==='es',rti=rTopic(k.rd);
   const other=kid==='Alex'?'Luc':'Alex';
   const unread=S.msgs.filter(m=>m.to===kid&&!m.read).length;
   const items=S.island.slice(-20);
@@ -737,18 +800,20 @@ function kidHub(n){
     <div class="sand"></div>
     ${items.map((it,i)=>`<button class="thing" style="left:${20+((i*29)%62)}%;top:${55+((i*17)%22)}%" data-act="sayitem" data-t="${esc(it.en)}">${it.e}<small>${esc(it.by[0])}</small></button>`).join('')}
     <button class="bip" data-act="bip" aria-label="Bip">${bipSVG}</button>
-    <div class="bubble" id="bubble">Hi, ${esc(kid)}! Ready to play?<small>¡Hola! ¿Listo para jugar? Tócame para un chiste.</small></div>
+    <div class="bubble" id="bubble">${RDm?`¡Hola, ${esc(kid)}! ¿Leemos juntos?<small>Toca PLAY y yo te llevo. Tócame para un chiste.</small>`:`Hi, ${esc(kid)}! Ready to play?<small>¡Hola! ¿Listo para jugar? Tócame para un chiste.</small>`}</div>
    </section>
    <div class="side">
     <div class="zones">
+     <div class="modesw"><button class="${RDm?'':'on'}" data-act="mode" data-m="en">🇬🇧 Inglés</button><button class="${RDm?'on':''}" data-act="mode" data-m="es">📖 Aprender a leer</button></div>
+     ${RDm?`<div class="lvl">📖 Tema ${rti+1} de ${RORD.length}: ${RT[RORD[rti]].n}</div>${RORD.map((z,i)=>{const v=RT[z],lock=i>rti;return`<button class="zone ${lock?'locked':'breathe'}" style="--d:${(i%3)*.35}s" ${lock?'data-act="lockedZone"':`data-act="rzone" data-z="${z}"`}>${lock?'🔒':v.e}<b>${v.n}</b><small>${k.rd.zones[z]||0} lecciones</small></button>`}).join('')}`:`
      <div class="lvl">${level1(k)?`⭐ Nivel 1 · Primeros pasos (${k.basic}/6) — luego se abren Cine, Canciones y Juegos`:'⭐⭐ Nivel 2 · Cine, Canciones y Juegos'}</div>
-     ${Object.entries(level1(k)?B:K).map(([z,v],i)=>`<button class="zone breathe" style="--d:${i*.35}s" data-act="zone" data-z="${z}">${v.e}<b>${v.n}</b><small>${v.s}<br>${k.zones[z]||0} lecciones</small></button>`).join('')}
+     ${Object.entries(level1(k)?B:K).map(([z,v],i)=>`<button class="zone breathe" style="--d:${i*.35}s" data-act="zone" data-z="${z}">${v.e}<b>${v.n}</b><small>${v.s}<br>${k.zones[z]||0} lecciones</small></button>`).join('')}`}
     </div>
-    <button class="go play" data-act="play">▶ PLAY<small>Toca y la app te lleva de aventura en aventura</small></button>
+    <button class="go play" data-act="${RDm?'rplay':'play'}">▶ PLAY<small>Toca y la app te lleva de aventura en aventura</small></button>
     <div class="extras">
-     <button class="ex" data-act="duo">🎤 Reto por turnos</button>
+     <button class="ex" data-act="duo">🎤 ${RDm?'Reto de lectura':'Reto por turnos'}</button>
      <button class="ex" data-act="msgs">💬 Mensajes a ${other}${unread?`<span class="badge">${unread}</span>`:''}</button>
-     <button class="ex" data-act="chat">🤖 Habla con Bip</button>
+     ${RDm?'<button class="ex" data-act="rplay">📚 ¡A leer!</button>':'<button class="ex" data-act="chat">🤖 Habla con Bip</button>'}
      <button class="ex" id="seek" data-act="stickers">🌟 Stickers (${k.stickers.length})</button>
     </div>
     <div class="coop"><b>🏝️ Isla de Alex y Luc</b> · ${S.island.length} cosas. Próximo regalo para los dos al llegar a ${goal}.
@@ -759,7 +824,7 @@ function kidHub(n){
   // Botones que saltan cuando nadie toca
   every(()=>{if(Date.now()-lastTouch>8000){const b=R($$('.zone,.ex,.go'));if(b){b.classList.add('hop');setTimeout(()=>b.classList.remove('hop'),950)}bipSay('Touch me! 👆','¡Tócame!');lastTouch=Date.now()}},1000);
   // Chistes de Bip
-  every(()=>{const j=R(JOKES);bipSay(j[0],j[1])},24000);
+  every(()=>{if(RDm){const j=R(CHISTES);bipSay(j[0],j[1])}else{const j=R(JOKES);bipSay(j[0],j[1])}},24000);
   // Botón que se esconde y vuelve
   every(()=>{const s=$('#seek');if(s){s.classList.add('hiding');setTimeout(()=>s&&s.classList.remove('hiding'),3500)}},15000);
   // Botón sorpresa con temporizador
@@ -770,7 +835,7 @@ function kidHub(n){
     document.body.appendChild(b);
     const iv=setInterval(()=>{p-=2;b.style.setProperty('--p',p);if(p<=0){clearInterval(iv);b.remove()}},100);timers.push(iv);
     b.onclick=()=>{clearInterval(iv);const r=b.getBoundingClientRect();confetti(r.left+48,r.top+48,90);sfx.win();b.remove();
-      S.kids[kid].stars+=3;weekAdd(S.kids[kid],3);save();toast(`${e} ¡Lo atrapaste! +3 ⭐`);say('Wow! You caught it!');const sm=$('.me small');if(sm)sm.textContent=`${S.kids[kid].stars} ⭐ · ${S.kids[kid].done} lecciones`};
+      S.kids[kid].stars+=3;weekAdd(S.kids[kid],3);save();toast(`${e} ¡Lo atrapaste! +3 ⭐`);S.kids[kid].mode==='es'?talk([[ES,'¡Lo atrapaste!']]):say('Wow! You caught it!');const sm=$('.me small');if(sm)sm.textContent=`${S.kids[kid].stars} ⭐ · ${S.kids[kid].done} lecciones`};
   };
   later(spawn,6000);every(spawn,19000);
 }
@@ -816,8 +881,8 @@ function statAns(e,ok){const st=stat(wStore()),d=dayOf(st,today()),zk=L.zone||L.
 function statLesson(){const st=stat(wStore()),d=dayOf(st,today());d.l++;d.m+=Math.min(30,Math.max(1,Math.round((Date.now()-(L.t0||Date.now()))/60000)));save()}
 function findW(k){for(const set of [B,K,REG])for(const p of Object.values(set)){const w=p.words.find(x=>x[1]===k);if(w)return[w,p]}return null}
 function findP(k){for(const set of [B,K,REG])for(const p of Object.values(set)){const x=p.phrases.find(y=>y[0]===k);if(x)return[x,p]}return null}
-const wStore=()=>L.who==='kid'?S.kids[kid]:S.adult;
-function wKey(e){if(e.w)return{t:'w',k:e.w[1]};const k=e.t==='listen'?e.ans:e.t==='build'?e.ans.join(' '):e.en;return k?{t:'p',k}:null}
+const wStore=()=>L.who==='reader'?S.kids[kid].rd:L.who==='kid'?S.kids[kid]:S.adult;
+function wKey(e){if(L.who==='reader'&&!e.w)return null;if(e.w)return{t:'w',k:e.w[1]};const k=e.t==='listen'?e.ans:e.t==='build'?e.ans.join(' '):e.en;return k?{t:'p',k}:null}
 function markWeak(e,ok){
   const o=wStore(),key=wKey(e);if(!key)return;const f=o.weak.find(x=>x.k===key.k);
   if(!ok){if(f)f.n=Math.min(3,f.n+1);else o.weak.push({...key,n:2});o.weak=o.weak.slice(-40)}
@@ -825,6 +890,7 @@ function markWeak(e,ok){
   save();
 }
 function reviewEx(x){
+  if(L&&L.who==='reader')return rReview(x);
   if(x.t==='w'){const f=findW(x.k);if(!f)return null;const[w,p]=f;return{t:'pic',w,rev:1,opts:shuf([w,...shuf(p.words.filter(y=>y!==w)).slice(0,2)])}}
   const f=findP(x.k);if(!f)return null;const[ph,p]=f;return{t:'meaning',en:ph[0],ans:ph[1],rev:1,opts:shuf([ph[1],...shuf(p.phrases.filter(y=>y!==ph)).slice(0,2).map(y=>y[1])])};
 }
@@ -880,12 +946,13 @@ function showEx(){
   app.innerHTML=`<div class="lesson ${L.who}">
    <header class="lbar"><button class="icon" data-act="quit" aria-label="Salir">✕</button><div class="prog"><i style="width:${pct()}%"></i></div><span class="combo">${L.combo>1?'🔥'+L.combo:''}</span>${AUTO&&L.who==='kid'?'<button class="autochip" data-act="pauseAuto">🤖 Auto ⏸</button>':''}</header>
    <main class="lbody">${e.rev?'<div class="revtag">🔁 Repaso: ¡esta te costó antes!</div>':''}${renderEx(e)}</main>
-   <footer class="lfoot" id="lf">${e.t==='build'?'<button class="check" data-act="check" disabled>Comprobar</button>':''}</footer></div>`;
+   <footer class="lfoot" id="lf">${(e.t==='build'||e.t==='rbuild'||e.t==='rorder')?'<button class="check" data-act="check" disabled>Comprobar</button>':''}</footer></div>`;
   if(e.t!=='karaoke')later(()=>talk(introSpeech(e)),350);
   if(e.t==='karaoke')karaoke(e);
 }
-const kidQ=(k,a)=>L.who==='kid'?k:a;
+const kidQ=(k,a)=>L.who!=='adult'?k:a;
 function renderEx(e){
+  if(RRENDER[e.t])return RRENDER[e.t](e);
   const opts=(arr,isR,cls='')=>`<div class="opts ${cls}">${arr.map((o,i)=>`<button class="opt ${cls==='pics'?'pic':''}" data-act="opt" data-v="${i}"${isR(o)?' data-r="1"':''}>${cls==='pics'?o[0]:esc(o)}</button>`).join('')}</div>`;
   const spk=t=>`<button class="spk" data-act="sayw" data-t="${esc(t)}" aria-label="Escuchar">🔊</button>`;
   switch(e.t){
@@ -905,6 +972,7 @@ function karaoke(e){
 }
 function explain(e){
   const pair=(en,es)=>`<b>${esc(en)}</b> = ${esc(es)}`;
+  if(L.who==='reader')return rExplain(e);
   switch(e.t){
    case 'pic':case 'hear':case 'word':return`${e.w[0]} ${pair(e.w[1],wes(e.w[1]))}`;
    case 'listen':return`🔊 Dijo: ${pair(e.ans,e.es)}`;
@@ -921,7 +989,7 @@ function answer(ok,correct){
     if(L.combo===3||L.combo===6||L.combo===9){toast(`🔥 ¡Racha de ${L.combo}!`);shake();rain(themeChars(),14)}}
   else{L.bad++;L.combo=0;sfx.no();shake();if(!e.again){L.q.push({...e,again:1})}}
   $$('.opt[data-r]').forEach(b=>b.classList.add('right'));
-  const msg=ok?R(L.who==='kid'?PRAISE_K:PRAISE_A):(L.who==='kid'?'¡Casi! La verás otra vez 💪':'Casi. Volverá más adelante.');
+  const msg=ok?R(L.who!=='adult'?PRAISE_K:PRAISE_A):(L.who!=='adult'?'¡Casi! La verás otra vez 💪':'Casi. Volverá más adelante.');
   const showAll=L.l1||!ok;
   $('#lf').innerHTML=`<div class="fb ${ok?'good':'bad'}"><b>${msg}</b>${showAll?`<span class="exp">${ok?'':'La respuesta correcta: '}${explain(e)}</span>`:''}<button class="next" data-act="next">Continuar ➜</button></div>`;
   if(L.l1&&(e.t==='pic'||e.t==='hear'))$$('.opt.pic').forEach((b,i)=>{const w=e.opts[i];b.insertAdjacentHTML('beforeend',`<small class="cap">${esc(w[1])}<br>${esc(wes(w[1]))}</small>`)});
@@ -929,7 +997,7 @@ function answer(ok,correct){
   if(L.l1&&(e.t==='listen'||e.t==='meaning')){const src=L.pool.phrases;$$('.opt').forEach(b=>{const t=b.textContent;const p=src.find(x=>x[0]===t||x[1]===t);if(p)b.insertAdjacentHTML('beforeend',`<small class="cap">${esc(t===p[0]?p[1]:p[0])}</small>`)})}
   const c=$('.combo');if(c)c.textContent=L.combo>1?'🔥'+L.combo:'';
   talk(feedbackSpeech(e,ok));
-  if(AUTO&&L.who==='kid'){const ms=L.l1?(ok?3800:5200):(ok?1800:3400),b=$('.next');b.classList.add('auto');b.style.setProperty('--t',ms+'ms');later(()=>ACT.next(),ms)}
+  if(AUTO&&L.who!=='adult'){const ms=L.l1?(ok?3800:5200):(ok?1800:3400),b=$('.next');b.classList.add('auto');b.style.setProperty('--t',ms+'ms');later(()=>ACT.next(),ms)}
 }
 function mic(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition,h=$('#heard'),m=$('.mic'),e=L.q[L.i];
@@ -946,9 +1014,10 @@ function renderBuild(){
   $('#slots').innerHTML=L.built.map((ti,j)=>`<button class="tile" data-act="slot" data-j="${j}">${esc(e.tiles[ti])}</button>`).join('');
   $$('#tiles .tile').forEach(b=>b.classList.toggle('used',L.built.includes(+b.dataset.i)));
   const c=$('.check');if(c)c.disabled=!L.built.length;
-  if(AUTO&&L.who==='kid'&&L.built.length===e.ans.length)later(()=>{if(!L.answered)ACT.check()},500);
+  if(AUTO&&L.who!=='adult'&&L.built.length===e.ans.length)later(()=>{if(!L.answered)ACT.check()},500);
 }
 function endLesson(){
+  if(L.who==='reader')return rEnd();
   clearTimers();statLesson();const acc=Math.round(L.ok/((L.ok+L.bad)||1)*100);
   if(L.who==='kid'){
     const k=S.kids[kid];const stars=5+L.stars+(acc>=90?3:0);k.stars+=stars;weekAdd(k,stars);k.done++;k.zones[L.zone]=(k.zones[L.zone]||0)+1;const lvUp=L.basic&&++k.basic===6;
@@ -1007,8 +1076,250 @@ function trail(){
   later(()=>ACT.autoGo(),5300);
 }
 function breakTime(){
-  clearTimers();say('Great job! Time for a break?');celebrate(2);
+  clearTimers();S.kids[kid].mode==='es'?talk([[ES,'¡Qué bien lees! ¿Descansamos un ratico?']]):say('Great job! Time for a break?');celebrate(2);
   modal(`<h3>🧃 ¡${autoRun} aventuras seguidas!</h3><p>¡Eres una máquina, ${esc(kid)}! ¿Hacemos una pausa o seguimos?</p><div class="row" style="justify-content:flex-start"><button class="go" style="width:auto" data-act="autoNext">▶ ¡Una más!</button><button class="ex" data-act="kidhub">🏝️ Descansar en la isla</button></div>`);
+}
+
+/* ======================= LECTURA EN ESPAÑOL ======================= */
+const RINTRO={
+ rinit:'¿Con qué letra empieza este dibujo?',
+ rletter:e=>e.up?'Busca la misma letra, pero en minúscula.':'Busca la misma letra, pero en mayúscula.',
+ rpic:'Lee la palabra y toca su dibujo.',
+ rword:'Mira el dibujo. ¿Cuál palabra es?',
+ rsylpic:'¿Con qué sílaba empieza el dibujo?',
+ rbuild:'Arma la palabra del dibujo con las sílabas.',
+ rmiss:'Falta un pedacito. ¿Cuál es?',
+ rread:'Ahora lee tú en voz alta. Toca el micrófono cuando estés listo.',
+ rsent:'Lee la frase y toca su dibujo.',
+ rorder:'Ordena las palabras para armar la frase del dibujo.',
+ rtf:'Lee la frase. ¿Dice lo que muestra el dibujo?',
+ rstory:'Lee el cuento en voz alta, con calma.',
+ rq:'Lee la pregunta y elige la respuesta.'};
+const RHOW={
+ pop:p=>p&&p.kind==='vowel'?'Revienta solo los globos que tienen la letra de abajo. ¡Ojo con las mayúsculas y minúsculas!':'Revienta solo los globos que tienen la sílaba de abajo.',
+ catch:p=>'Mira el dibujo de abajo. Cuando caiga la palabra que lo nombra, tócala.',
+ memory:p=>'Voltea dos cartas. Une cada dibujo con su palabra escrita. ¡No hay tiempo, tranquilo!',
+ spell:p=>'Mira el dibujo y escribe su nombre tocando las letras en orden.',
+ mole:p=>'Mira el dibujo de abajo. Toca la palabra correcta cuando se asome.'};
+const VOW=['a','e','i','o','u'];
+const first=w=>rNorm(w)[0];
+function rExplain(e){
+  switch(e.t){
+   case 'rinit':return`${e.w[0]} <b>${esc(e.w[1])}</b> empieza con <b>${first(e.w[1])}</b>`;
+   case 'rletter':return`<b>${esc(e.L.toUpperCase())}</b> y <b>${esc(e.L)}</b> son la misma letra`;
+   case 'rpic':case 'rword':case 'rbuild':case 'rmiss':case 'rsylpic':return`${e.w[0]} <b>${esc(sylTxt(e.w))}</b>`;
+   case 'rsent':case 'rorder':case 'rtf':return`${e.w[0]} <b>${esc(e.w[1])}</b>`;
+   case 'rread':return`<b>${esc(e.en)}</b>`;
+   case 'rstory':return`📚 ${esc(e.st.t)}`;
+   case 'rq':return`<b>${esc(e.ans)}</b>`;
+  }return'';
+}
+const opt3=(arr,isR,cls='')=>`<div class="opts ${cls}">${arr.map((o,i)=>`<button class="opt ${cls==='pics'?'pic':''} ${cls==='letters'?'rl':''}" data-act="opt" data-v="${i}"${isR(o)?' data-r="1"':''}>${cls==='pics'?o[0]:esc(typeof o==='string'?o:o[1])}</button>`).join('')}</div>`;
+const RRENDER={
+ rinit:e=>`<h2>🔤 ¿Con qué letra empieza?</h2><div class="bigemoji">${e.w[0]}</div>${opt3(e.opts,o=>o===e.ans,'letters')}`,
+ rletter:e=>`<h2>🔤 Busca la misma letra en ${e.up?'minúscula':'mayúscula'}</h2><div class="bigletter">${esc(e.up?e.L.toUpperCase():e.L)}</div>${opt3(e.opts,o=>o===e.ans,'letters')}`,
+ rpic:e=>`<h2>📖 Lee y toca el dibujo</h2><div class="rtext big">${e.syl?sylHTML(e.w):esc(e.w[1])}</div>${opt3(e.opts,o=>o===e.w,'pics')}`,
+ rword:e=>`<h2>🤔 ¿Cuál palabra es?</h2><div class="bigemoji">${e.w[0]}</div>${opt3(e.opts,o=>o===e.w[1],'rwords')}`,
+ rsylpic:e=>`<h2>🧩 ¿Con qué sílaba empieza?</h2><div class="bigemoji">${e.w[0]}</div>${opt3(e.opts,o=>o===e.ans,'letters')}`,
+ rmiss:e=>`<h2>🧩 Completa la palabra</h2><div class="bigemoji" style="font-size:100px">${e.w[0]}</div><div class="rtext big">${e.parts.map((p,i)=>i===e.idx?'<span class="blank sy">__</span>':`<span class="sy s${i%2}">${esc(p)}</span>`).join('')}</div>${opt3(e.opts,o=>o===e.ans,'letters')}`,
+ rbuild:e=>`<h2>🧩 Arma la palabra del dibujo</h2><div class="bigemoji" style="font-size:100px">${e.w[0]}</div><div class="slots" id="slots"></div><div class="tiles" id="tiles">${e.tiles.map((w,i)=>`<button class="tile rtile" data-act="tile" data-i="${i}">${esc(w)}</button>`).join('')}</div>`,
+ rorder:e=>`<h2>🧩 Ordena la frase del dibujo</h2><div class="bigemoji" style="font-size:100px">${e.w[0]}</div><div class="slots" id="slots"></div><div class="tiles" id="tiles">${e.tiles.map((w,i)=>`<button class="tile rtile" data-act="tile" data-i="${i}">${esc(w)}</button>`).join('')}</div>`,
+ rsent:e=>`<h2>📖 Lee la frase y toca el dibujo</h2><div class="rtext">${esc(e.w[1])}</div>${opt3(e.opts,o=>o===e.w,'pics')}`,
+ rtf:e=>`<h2>🤔 ¿La frase dice lo que muestra el dibujo?</h2><div class="bigemoji" style="font-size:110px">${e.pic}</div><div class="rtext">${esc(e.w[1])}</div>${opt3(['✅ Sí','❌ No'],o=>(o==='✅ Sí')===e.truth)}`,
+ rq:e=>`${e.st?`<details class="story mini-st"><summary>📚 Ver el cuento otra vez</summary>${e.st.x.map(x=>`<p>${esc(x)}</p>`).join('')}</details>`:''}<h2>❓ ${esc(e.q)}</h2>${opt3(e.opts,o=>o===e.ans,'rwords')}`,
+ rread:e=>rReadHTML(e,`<div class="rtext ${e.big?'big':''}" id="rt">${rWordsHTML(e.en,e.w)}</div>`),
+ rstory:e=>rReadHTML(e,`<div class="story" id="rt"><h3>${e.st.e} ${esc(e.st.t)}</h3>${e.st.x.map(x=>`<p>${rWordsHTML(x)}</p>`).join('')}</div>`)
+};
+function rWordsHTML(t,w){
+  if(w&&w[2]&&!t.includes(' '))return`<span class="rw" data-w="${esc(rNorm(t))}">${sylHTML(w)}</span>`;
+  return t.split(' ').map(x=>`<span class="rw" data-w="${esc(rNorm(x))}">${esc(x)}</span>`).join(' ');
+}
+function rReadHTML(e,body){
+  return`<h2>🎤 ${e.t==='rstory'?'Lee el cuento en voz alta':'Lee en voz alta'}</h2>${body}
+   <div class="speakrow"><button class="mic" data-act="rMic">🎤<br>Toca y<br>lee</button></div><div id="heard"></div>
+   <div class="judge"><small>¿Sin micrófono? Un adulto escucha y elige:</small><div class="row"><button class="ghost" data-act="rJudge" data-v="1">✅ Leyó bien</button><button class="ghost" data-act="rJudge" data-v="0">🔁 Le costó</button></div></div>`;
+}
+const RSYLS=()=>[...new Set(RSYLW.filter(x=>x[2]).flatMap(x=>x[2].split('-')))];
+function rMake(t,pool,nx){
+  const W=pool.words;
+  const others=(w,n,src=W)=>shuf(src.filter(x=>x!==w&&x[0]!==w[0])).slice(0,n);
+  if(t==='rinit'){const w=nx.w();const a=first(w[1]);return{t,w,ans:a,opts:shuf([a,...shuf(VOW.filter(v=>v!==a)).slice(0,2)])}}
+  if(t==='rletter'){const L2=R(VOW),up=Math.random()<.5;const o2=shuf(VOW.filter(v=>v!==L2)).slice(0,2);return{t,L:L2,up,ans:up?L2:L2.toUpperCase(),opts:shuf([L2,...o2]).map(x=>up?x:x.toUpperCase())}}
+  if(t==='rpic'){const w=nx.w();return{t,w,syl:pool.kind==='syl',opts:shuf([w,...others(w,2)])}}
+  if(t==='rword'){const w=nx.w();const sim=shuf(W.filter(x=>x!==w&&x[1]!==w[1])).sort((a,b)=>lev(a[1],w[1])-lev(b[1],w[1])).slice(0,2).map(x=>x[1]);return{t,w,opts:shuf([w[1],...sim])}}
+  if(t==='rsylpic'){const w=nx.w(t);const sy=w[2].split('-');const all=RSYLS().filter(x=>x!==sy[0]);const near=shuf(all.filter(x=>x[0]===sy[0][0]||x.slice(-1)===sy[0].slice(-1))).slice(0,2);return{t,w,ans:sy[0],opts:shuf([sy[0],...(near.length>=2?near:shuf(all).slice(0,2))])}}
+  if(t==='rmiss'){const w=nx.w(t);const parts=w[2].split('-');const idx=Math.floor(Math.random()*parts.length);const all=RSYLS().filter(x=>x!==parts[idx]);const near=shuf(all.filter(x=>x[0]===parts[idx][0]||x.slice(-1)===parts[idx].slice(-1))).slice(0,2);return{t,w,parts,idx,ans:parts[idx],opts:shuf([parts[idx],...(near.length>=2?near:shuf(all).slice(0,2))])}}
+  if(t==='rbuild'){const w=nx.w(t);const parts=w[2].split('-');const all=RSYLS().filter(x=>!parts.includes(x));return{t,w,ans:parts,tiles:shuf([...parts,R(all)])}}
+  if(t==='rread'){if(pool.kind==='vowel'){const L2=R(VOW);return{t,en:L2,L:L2,vowel:1,big:1}}const w=nx.w();return{t,w,en:w[1],big:pool.kind!=='sent'}}
+  if(t==='rsent'){const w=nx.w();return{t,w,en:w[1],opts:shuf([w,...others(w,2)])}}
+  if(t==='rorder'){const w=nx.w();const ws=w[1].split(' ');return{t,w,en:w[1],ans:ws,tiles:shuf(ws)}}
+  if(t==='rtf'){const w=nx.w();const truth=Math.random()<.5;return{t,w,en:w[1],truth,pic:truth?w[0]:R(W.filter(x=>x!==w&&x[0]!==w[0]))[0]}}
+}
+function rStart(z){
+  const k=S.kids[kid],rd=k.rd,pool0=RT[z];
+  const pool=pool0.kind==='story'?{...pool0,words:RT.frases.words}:pool0;
+  const kn=new Set(rd.known||[]),wk=new Set((rd.weak||[]).map(x=>x.k));
+  const wd=shuf(pool.words).sort((a,b)=>(wk.has(b[1])-wk.has(a[1]))||(kn.has(a[1])-kn.has(b[1])));let wi=0;
+  const nx={w:t=>{for(let i=0;i<wd.length;i++){const w=wd[wi++%wd.length];if(!(t==='rsylpic'||t==='rmiss'||t==='rbuild')||(w[2]&&w[2].includes('-')))return w}return wd[0]}};
+  let q;
+  if(pool0.kind==='story'){
+    const st=pool0.stories[(rd.zones[z]||0)%pool0.stories.length];
+    const mq=x=>({t:'rq',st,q:x[0],en:x[0],ans:x[1],opts:shuf(x.slice(1))});
+    q=[{t:'rstory',st,en:st.x.join(' ')},mq(st.q[0]),mq(st.q[1]),{t:'M',g:'memory'},mq(st.q[2]),{t:'M',g:'mole'},{t:'rread',en:R(st.x),big:0}];
+  }else{
+    const seq=pool0.kind==='vowel'?['rinit','rletter','M','rinit','rread','M','rletter','rinit','M','rread']
+      :pool0.kind==='syl'?['rpic','rsylpic','M','rword','rread','M','rbuild','rmiss','M','rpic','rread']
+      :['rsent','rtf','M','rread','rorder','M','rsent','rread','M','rtf'];
+    const minis=shuf(pool0.kind==='vowel'?['pop','memory','pop']:['mole','memory','catch','spell','pop']);let mi=0;
+    q=seq.map(t=>t==='M'?{t:'M',g:minis[mi++%minis.length]}:rMake(t,pool,nx));
+  }
+  const mpool=pool0.kind==='syl'||pool0.kind==='vowel'?pool:{...pool,words:RSYLW,kind:'syl'};
+  L={who:'reader',zone:z,pool:mpool,t0:Date.now(),l1:true,basic:true,q,i:0,ok:0,bad:0,combo:0,done:0,stars:0,answered:false,built:[]};
+  const rv=[...(rd.weak||[])].sort((a,b)=>b.n-a.n).slice(0,2).map(rReview).filter(Boolean);
+  rv.forEach((r,i)=>L.q.splice(Math.min(1+i*4,L.q.length),0,r));
+  showEx();
+}
+function rFind(k){for(const z of RORD){const p=RT[z];const w=p.words.find(x=>x[1]===k);if(w)return[w,p]}return null}
+function rReview(x){
+  const f=rFind(x.k);if(!f)return null;const[w,p]=f;
+  if(p.kind==='sent')return{t:'rsent',w,en:w[1],rev:1,opts:shuf([w,...shuf(p.words.filter(y=>y!==w)).slice(0,2)])};
+  if(p.kind==='vowel'){const a=first(w[1]);return{t:'rinit',w,rev:1,ans:a,opts:shuf([a,...shuf(VOW.filter(v=>v!==a)).slice(0,2)])}}
+  return{t:'rpic',w,syl:true,rev:1,opts:shuf([w,...shuf(p.words.filter(y=>y!==w&&y[0]!==w[0])).slice(0,2)])};
+}
+/* --- lectura en voz alta --- */
+function rEval(target,heard,vowel){
+  const tw=rNorm(target).split(' ').filter(Boolean),hw=rNorm(heard).split(' ').filter(Boolean);
+  if(vowel){const v=tw[0];const ok=hw.some(h=>h===v||h==='h'+v||h[0]===v||(h[0]==='h'&&h[1]===v));return{ok,marks:[ok],score:ok?1:0}}
+  const used=new Set();const marks=tw.map(t=>{const i=hw.findIndex((h,j)=>!used.has(j)&&(h===t||(t.length>=4&&lev(h,t)<=1)||(t.length>=7&&lev(h,t)<=2)));if(i>=0){used.add(i);return true}return false});
+  const score=marks.filter(Boolean).length/Math.max(1,tw.length);
+  return{ok:score>=(tw.length>=4?.75:1),marks,score};
+}
+function rMic(){
+  const e=L.q[L.i],SR=window.SpeechRecognition||window.webkitSpeechRecognition,h=$('#heard'),m=$('.mic');
+  const fb='El micrófono no está disponible aquí. Un adulto puede escuchar y tocar ✅ o 🔁 abajo.';
+  if(L.answered)return;if(!SR){h.textContent=fb;$('.judge').classList.add('hl');return}
+  try{
+    const r=new SR();r.lang='es-CO';r.interimResults=true;r.maxAlternatives=3;r.continuous=e.t==='rstory';
+    let t0=0,final='',done=false;m.classList.add('rec');h.textContent='👂 Te escucho… lee con calma.';
+    r.onstart=()=>{t0=Date.now()};
+    r.onresult=ev=>{let txt='';for(const res of ev.results)txt+=res[0].transcript+' ';final=txt;h.textContent='👂 '+txt;
+      const ev2=rEval(e.en,txt,e.vowel);$$('#rt .rw').forEach((s2,i)=>{if(ev2.marks[i])s2.classList.add('okw')});
+      if(ev2.ok&&!done){done=true;try{r.stop()}catch(x){}rFinish(e,true,txt,t0)}};
+    r.onerror=ev=>{m.classList.remove('rec');if(ev.error==='no-speech')h.textContent='No te escuché. Toca el micrófono y lee otra vez.';else{h.textContent=fb;$('.judge').classList.add('hl')}};
+    r.onend=()=>{m.classList.remove('rec');if(!done&&final){done=true;const ev2=rEval(e.en,final,e.vowel);
+      if(ev2.ok)return rFinish(e,true,final,t0);
+      L.tries=(L.tries||0)+1;$$('#rt .rw').forEach((s2,i)=>s2.classList.toggle('badw',!ev2.marks[i]));
+      if(L.tries>=3)return rFinish(e,false,final,t0);
+      h.innerHTML=`Escuché: «${esc(final.trim())}». Las palabras en rojo hay que leerlas otra vez. <b>¡Intenta de nuevo!</b>`;talk([[ES,R(['Casi. Mira las palabras en rojo e intenta otra vez.','Vas muy bien. Lee otra vez con calma.'])]])}};
+    r.start();
+  }catch(err){h.textContent=fb;$('.judge').classList.add('hl')}
+}
+function rFinish(e,ok,heard,t0){
+  const st=stat(wStore());st.reads=(st.reads||0)+1;if(heard!=null)st.mic=(st.mic||0)+1;
+  const nw=rNorm(e.en).split(' ').length;
+  if(heard&&t0&&nw>=3){const secs=(Date.now()-t0)/1000;if(secs>1)st.wpm=(st.wpm||[]).concat([{d:today(),v:Math.round(nw/(secs/60))}]).slice(-30)}
+  save();L.tries=0;answer(ok,e.en);
+}
+/* --- test inicial de lectura --- */
+let RPL=null;
+function rPlacement(){
+  ctx='kid';AUTO=false;clearTimers();closeModal();const k=S.kids[kid];skin(k.skin);
+  app.innerHTML=`<div class="trail"><div style="width:170px;animation:bob 2.4s infinite">${bipSVG}</div>
+   <h1 class="pop-in">🔍 ¿Qué tanto lees?</h1>
+   <p class="sub" style="max-width:640px">¡Hola, ${esc(kid)}! Vamos a ver qué letras y palabras ya sabes leer.<br>Si no sabes una, toca <b>🤷 No sé</b>: ¡no pasa nada, para eso vamos a jugar!</p>
+   <div class="row"><button class="go" style="width:auto" data-act="rplStart">▶ ¡Empezar!</button><button class="ex" data-act="rplSkip">Empezar desde las vocales</button><button class="ex" data-act="mode" data-m="en">🇬🇧 Volver a inglés</button></div></div>`;
+  talk([[ES,`¡Hola, ${kid}! Vamos a ver qué tanto lees. Yo no te voy a leer nada: ¡tú eres el lector!`]],'bip');
+}
+function rplStart(){
+  const tierW=(z,n)=>shuf(RT[z].words).slice(0,n);
+  const it=[...tierW('vocales',2).map(w=>({tier:0,t:'rinit',w})),...tierW('mp',1).concat(tierW('sl',2)).map(w=>({tier:1,t:'rpic',w})),...tierW('tnd',1).concat(tierW('crb',1),tierW('nch',1)).map(w=>({tier:2,t:'rpic',w})),...tierW('frases',2).map(w=>({tier:3,t:'rsent',w}))];
+  RPL={items:it,i:0,res:[]};rplShow();
+}
+function rplShow(){
+  clearTimers();if(RPL.i>=RPL.items.length)return rplEnd();
+  const it=RPL.items[RPL.i],w=it.w;let body,opts;
+  if(it.t==='rinit'){const a=first(w[1]);opts=shuf([a,...shuf(VOW.filter(v=>v!==a)).slice(0,2)]);it.ans=a;body=`<h2>🔤 ¿Con qué letra empieza?</h2><div class="bigemoji">${w[0]}</div><div class="opts letters">${opts.map((o,i)=>`<button class="opt rl" data-act="rplOpt" data-v="${i}"${o===a?' data-r="1"':''}>${o}</button>`).join('')}</div>`}
+  else{const src=it.t==='rsent'?RT.frases.words:RSYLW;opts=shuf([w,...shuf(src.filter(x=>x!==w&&x[0]!==w[0])).slice(0,2)]);it.ans=w;body=`<h2>📖 Lee y toca el dibujo</h2><div class="rtext ${it.t==='rsent'?'':'big'}">${esc(w[1])}</div><div class="opts pics">${opts.map((o,i)=>`<button class="opt pic" data-act="rplOpt" data-v="${i}"${o===w?' data-r="1"':''}>${o[0]}</button>`).join('')}</div>`}
+  it.opts=opts;it.done=false;
+  app.innerHTML=`<div class="lesson kid"><header class="lbar"><span style="padding:0 10px;font-weight:700">🔍 ${RPL.i+1}/${RPL.items.length}</span><div class="prog"><i style="width:${RPL.i/RPL.items.length*100}%"></i></div></header>
+   <main class="lbody">${body}<button class="ghost said" data-act="rplOpt" data-v="-1">🤷 No sé</button></main><footer class="lfoot" id="lf"></footer></div>`;
+  later(()=>talk([[ES,it.t==='rinit'?'¿Con qué letra empieza este dibujo?':'Lee y toca el dibujo.']]),300);
+}
+function rplAnswer(v){
+  const it=RPL.items[RPL.i];if(it.done)return;it.done=true;const ok=v>=0&&it.opts[v]===it.ans;RPL.res.push({tier:it.tier,ok,w:it.w});
+  $$('.opt[data-r]').forEach(b=>b.classList.add('right'));if(v>=0&&!ok)$$('.opt')[v].classList.add('wrong');
+  if(ok){sfx.ok();confetti(innerWidth/2,innerHeight*.7,50)}
+  talk([[ES,ok?R(['¡Muy bien!','¡Eso es!','¡Lo leíste!']):v<0?'Gracias por decirme. ¡La vamos a aprender!':'Casi. Mira la respuesta verde.']]);
+  $('#lf').innerHTML=`<div class="fb ${ok?'good':'bad'}" style="${v<0?'background:var(--a2)':''}"><b>${ok?'¡Lo sabías! 🎉':v<0?'¡Gracias por decirme! 💪':'¡Casi! Ahora la aprendes'}</b><span class="exp">${it.w[0]} <b>${esc(it.w[2]?sylTxt(it.w):it.w[1])}</b></span><button class="next" data-act="rplNext">Siguiente ➜</button></div>`;
+}
+function rplEnd(){
+  const k=S.kids[kid],rd=k.rd;let start=0;
+  const tierOk=t=>{const r=RPL.res.filter(x=>x.tier===t);return r.length&&r.every(x=>x.ok)};
+  if(tierOk(0)){start=1;if(tierOk(1)){start=3;if(tierOk(2))start=7}}
+  rd.placed=true;rd.start=start;rd.place={known:RPL.res.filter(x=>x.ok).length,total:RPL.res.length,date:today(),start};
+  RPL.res.filter(x=>!x.ok).forEach(x=>{if(!rd.weak.find(y=>y.k===x.w[1]))rd.weak.push({t:'w',k:x.w[1],n:2})});
+  RPL.res.filter(x=>x.ok).forEach(x=>{if(!rd.known.includes(x.w[1]))rd.known.push(x.w[1])});save();
+  const T=RT[RORD[start]];
+  app.innerHTML=`<div class="reward"><h1 class="pop-in">¡Listo, ${esc(kid)}!</h1>
+   <div class="loot"><div class="l"><span>✅</span><b>Leíste bien ${rd.place.known} de ${rd.place.total}</b></div><div class="l"><span>${T.e}</span><b>Empiezas en: ${T.n}</b>${T.s}</div></div>
+   <p class="sub" style="max-width:640px">Lo que te costó te va a aparecer otra vez para repasarlo. ¡Y recuerda: aquí tú eres el lector, yo nunca te leo las palabras!</p>
+   <div class="row"><button class="go" style="width:auto" data-act="rplay">▶ ¡A leer!</button><button class="ex" data-act="kidhub">🏝️ Ver mi isla</button></div></div>`;
+  celebrate(3);talk([[ES,`¡Muy bien, ${kid}! Empiezas en ${T.n}.`]]);
+}
+/* --- camino y fin de lección --- */
+function rTrail(){
+  clearTimers();closeModal();ctx='kid';const k=S.kids[kid],rd=k.rd;skin(k.skin);
+  if(!rd.placed)return rPlacement();
+  const ti=rTopic(rd),z=RORD[ti];
+  const stops=[-2,-1,0,1,2].map(i=>{const n=ti+i;if(n<0)return{e:'🏁',c:'done'};if(n>=RORD.length)return{e:'🏆',c:'chest'};return{e:RT[RORD[n]].e,c:i<0?'done':i===0?'cur':''}});
+  const left=2-(rd.done%2);
+  app.innerHTML=`<div class="trail"><h1 class="pop-in">📖 ¡A leer, ${esc(kid)}!</h1>
+   <div class="path" id="path"><span class="walker" id="walker">${k.av}</span>${stops.map(s2=>`<div class="stop ${s2.c}">${s2.e}</div>`).join('')}</div>
+   <p class="sub">${RT[z].e} ${RT[z].n} · ${ti<RORD.length-1?(left===1?'¡una lección más y pasas al siguiente tema!':'2 lecciones para pasar al siguiente tema'):'¡Ya llegaste a los cuentos!'}</p>
+   <div class="count" id="count"></div>
+   <div class="row"><button class="go" style="width:auto" data-act="rGo">▶ ¡Ya!</button><button class="ex" data-act="kidhub">⏸ Parar</button></div></div>`;
+  const ps=$$('.stop'),w=$('#walker');const at=i=>ps[i].offsetLeft+ps[i].offsetWidth/2+'px';
+  w.style.transition='none';w.style.left=at(1);void w.offsetWidth;w.style.transition='';
+  later(()=>{w.style.left=at(2);sfx.pop();later(sfx.pop,400);later(sfx.pop,800)},500);
+  later(()=>talk([[ES,`¡Vamos con ${RT[z].n.toLowerCase()}!`]],'bip'),900);
+  [3,2,1].forEach((n,i)=>later(()=>{$('#count').innerHTML=`<span>${n}</span>`;tone(520+i*120,.15,'triangle',.12)},2000+i*900));
+  later(()=>{$('#count').innerHTML='<span>¡YA!</span>';sfx.win();confetti(innerWidth/2,innerHeight*.7,80)},4700);
+  later(()=>ACT.rGo(),5300);
+}
+function rEnd(){
+  clearTimers();statLesson();const acc=Math.round(L.ok/((L.ok+L.bad)||1)*100);
+  const k=S.kids[kid],rd=k.rd,before=rTopic(rd);
+  const stars=5+L.stars+(acc>=90?3:0);k.stars+=stars;weekAdd(k,stars);rd.done++;rd.zones[L.zone]=(rd.zones[L.zone]||0)+1;
+  const lft=STICKERS.filter(s2=>!k.stickers.includes(s2));const st=lft.length?R(lft):R(STICKERS);if(!k.stickers.includes(st))k.stickers.push(st);
+  const it=ISLAND[S.island.length%ISLAND.length];S.island.push({e:it[0],en:it[1],by:kid});save();
+  const after=rTopic(rd),up=after>before;
+  app.innerHTML=`<div class="reward"><h1 class="pop-in">¡Qué buen lector, ${esc(kid)}!</h1>
+   <button class="chest" data-act="chest" id="chest">🎁<small>¡Toca el cofre!</small></button>
+   <div class="loot" id="loot" hidden>
+    <div class="l"><span>⭐</span><b>+${stars}</b>estrellas</div>
+    <div class="l"><span>${st}</span><b>Sticker nuevo</b></div>
+    <div class="l"><span>${it[0]}</span><b>¡Algo nuevo!</b>llegó a la isla</div>
+    <div class="l"><span>🎯</span><b>${acc}%</b>de aciertos</div>
+   </div>
+   ${up?`<p class="sub" style="font-size:30px">🏆 ¡Nuevo tema desbloqueado: ${RT[RORD[after]].e} ${RT[RORD[after]].n}!</p>`:''}
+   <div class="row">${AUTO?'<button class="go" style="width:auto" data-act="autoNext">▶ Siguiente lectura</button><button class="ex" data-act="kidhub">⏸ Parar</button>':'<button class="go" style="width:auto" data-act="rplay">▶ Otra lectura</button><button class="ex" data-act="kidhub">🏝️ Ver mi isla</button>'}</div></div>`;
+  celebrate(3);talk([[ES,up?`¡Increíble, ${kid}! Desbloqueaste un tema nuevo.`:`¡Muy bien, ${kid}! Sigues aprendiendo a leer.`]],'bip');
+  if(up){later(()=>fireworks(8),900);later(()=>rain(['🏆','📖','⭐'],50),1200)}
+  if(AUTO){later(()=>ACT.chest(),1400);later(()=>ACT.autoNext(),6500)}
+}
+/* --- minijuegos de lectura --- */
+function rPop(){
+  const vow=L.pool.kind==='vowel';
+  const items=vow?VOW.flatMap(v=>[[v,v],[v.toUpperCase(),v]]):shuf(RSYLS().filter(x=>L.pool.words.some(w=>w[2]&&w[2].split('-').includes(x)))).slice(0,8).map(x=>[x,x]);
+  const cols=['#ef4444','#3b82f6','#22c55e','#e0b400','#a855f7','#f97316','#ec4899'];
+  floatGame({items,dir:'rise',need:6,secs:30,cls:'balloon rb',swap:2,
+    prompt:t=>{$('#mh').innerHTML=`Revienta los globos que dicen: <b class="rtarget">${esc(vow?t[1]+' '+t[1].toUpperCase():t[1])}</b>`},
+    render:(b,it)=>{b.style.setProperty('--c',R(cols));b.textContent=it[0]}});
+}
+function rCatch(){
+  floatGame({items:L.pool.words,dir:'fall',need:5,secs:30,cls:'rfall',swap:1,
+    prompt:t=>{$('#mh').innerHTML=`Atrapa la palabra de este dibujo: <span style="font-size:46px;vertical-align:middle">${t[0]}</span>`},
+    render:(b,it)=>{b.textContent=it[1]}});
 }
 
 /* ======================= MINIJUEGOS ======================= */
@@ -1020,7 +1331,7 @@ const MHOW={
  mole:k=>'Van a asomarse dibujos por los huecos. Toca solo el que Bip dice en inglés.'};
 const TIMED={pop:1,catch:1,mole:1};
 function mini(g){
-  clearTimers();const kidM=L.who==='kid';
+  clearTimers();const kidM=L.who!=='adult';
   const T=kidM?{pop:'🎈 ¡Revienta los globos!',catch:'🧺 ¡Atrapa lo que cae!',memory:'🃏 Memoria mágica',spell:'🫧 Burbujas de letras',mole:'🐹 ¡Atrapa al que asoma!'}
                :{pop:'🍝 El banquete de la Familia',catch:'👗 Desfile de moda',memory:'💌 Encuentra a tu pareja',spell:'📜 El pergamino del castillo',mole:'🕳️ ¿Quién asoma?'};
   L.mg=g;
@@ -1028,10 +1339,11 @@ function mini(g){
    <div class="arena" id="arena"><div class="howto pop-in"><div class="hbig">${T[g].split(' ')[0]}</div><h2>${T[g].slice(T[g].indexOf(' ')+1)}</h2>
     <p>${MHOW[g](kidM)}</p>${TIMED[g]?'<p class="tnote">⏱ Tiene tiempo: empieza cuando estés listo.</p>':''}
     <button class="go" style="width:auto" data-act="miniGo">▶ ¡Empezar!</button></div></div><p class="mhelp" id="mh"></p></div>`;
-  sfx.win();if(kidM)later(()=>talk([[EN,'Game time!'],[ES,MHOW[g](kidM)],[ES,'Cuando estés listo, toca empezar.']],'bip'),500);
+  if(L.who==='reader'){const p=$('.howto p');if(p)p.textContent=RHOW[g](L.pool);}
+  sfx.win();if(kidM)later(()=>talk([[L.who==='reader'?ES:EN,L.who==='reader'?'¡Hora de jugar!':'Game time!'],[ES,L.who==='reader'?RHOW[g](L.pool):MHOW[g](kidM)],[ES,'Cuando estés listo, toca empezar.']],'bip'),500);
 }
 function miniDone(score,msg){
-  clearTimers();L.stars+=score;celebrate(2);toast(`${msg||'¡Minijuego superado!'} ${L.who==='kid'?'+'+score+' ⭐':'+'+score*3+' XP'}`);
+  clearTimers();L.stars+=score;celebrate(2);toast(`${msg||'¡Minijuego superado!'} ${L.who!=='adult'?'+'+score+' ⭐':'+'+score*3+' XP'}`);
   later(()=>{L.i++;showEx()},1900);
 }
 function floatGame({items,dir,need,secs,prompt,render,cls,swap}){
@@ -1042,7 +1354,7 @@ function floatGame({items,dir,need,secs,prompt,render,cls,swap}){
   const spawn=it=>{
     if(done)return;const b=document.createElement('button');
     b.className='floater '+cls+(dir==='fall'?' fall':'');b.style.left=(4+Math.random()*82)+'%';b.style.animationDuration=(dir==='fall'?4.2:4.6)+Math.random()*2+'s';
-    render(b,it);b.dataset.k=it[1];
+    b.dataset.k=it[1];render(b,it);
     b.addEventListener('pointerdown',ev=>{ev.preventDefault();if(done)return;
       if(b.dataset.k===target[1]){hits++;sfx.pop();const r=b.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2,28);b.classList.add('popped');setTimeout(()=>b.remove(),200);upd();
         if(hits>=need)return end();if(hits%swap===0)pick()}
@@ -1054,6 +1366,7 @@ function floatGame({items,dir,need,secs,prompt,render,cls,swap}){
   every(()=>{time--;upd();if(time<=0)end()},1000);
 }
 function gPop(kidM){
+  if(L.who==='reader')return rPop();
   if(kidM)floatGame({items:COLORS,dir:'rise',need:6,secs:25,cls:'balloon',swap:2,
     prompt:t=>{$('#mh').innerHTML=`Revienta los globos <b style="color:${t[0]};-webkit-text-stroke:1px rgba(0,0,0,.35)">${t[2]}</b> · <i>${t[1]}</i> 🔊`;say(`Pop the ${t[1]} balloons!`)},
     render:(b,it)=>b.style.setProperty('--c',it[0])});
@@ -1062,6 +1375,7 @@ function gPop(kidM){
     render:(b,it)=>b.textContent=it[0]});
 }
 function gCatch(kidM){
+  if(L.who==='reader')return rCatch();
   const items=kidM?L.pool.words:REG.moda.words;
   floatGame({items,dir:'fall',need:kidM?6:5,secs:26,cls:'',swap:2,
     prompt:t=>{$('#mh').innerHTML=kidM?`¡Atrapa: <b>${esc(t[1])}</b>! 🔊`:`En la pasarela falta: <b>${esc(t[1])}</b>`;say(kidM?`Catch the ${t[1]}!`:`Bring me the ${t[1]}`)},
@@ -1070,30 +1384,30 @@ function gCatch(kidM){
 function gMemory(){
   const A=$('#arena');const NP=L.basic?4:6;const ws=shuf(L.pool.words).slice(0,NP);
   const cards=shuf(ws.flatMap(w=>[{k:w[1],f:w[0],e:1},{k:w[1],f:w[1],e:0}]));
-  A.innerHTML=`<div class="mem">${cards.map((c,i)=>`<button class="mc" data-i="${i}"><i><em>${L.who==='kid'?'❓':'💌'}</em><strong class="${c.e?'e':''}">${esc(c.f)}</strong></i></button>`).join('')}</div>`;
-  $('#mh').textContent=L.who==='kid'?'Une cada dibujo con su palabra':'Une cada objeto con su palabra';
+  A.innerHTML=`<div class="mem">${cards.map((c,i)=>`<button class="mc" data-i="${i}"><i><em>${L.who!=='adult'?'❓':'💌'}</em><strong class="${c.e?'e':''}">${esc(c.f)}</strong></i></button>`).join('')}</div>`;
+  $('#mh').textContent=L.who==='reader'?'Une cada dibujo con su palabra escrita':L.who==='kid'?'Une cada dibujo con su palabra':'Une cada objeto con su palabra';
   let open=[],pairs=0,moves=0,lock=false;const upd=()=>{$('#ms').textContent=`💞 ${pairs}/${NP}`;$('#mt').textContent=`Turnos: ${moves}`};upd();
   A.querySelectorAll('.mc').forEach(b=>b.addEventListener('click',()=>{
     if(lock||b.classList.contains('on')||b.classList.contains('ok'))return;sfx.tap();b.classList.add('on');open.push(b);
     if(open.length===2){moves++;lock=true;const[a,c]=open;const ca=cards[a.dataset.i],cc=cards[c.dataset.i];
-      if(ca.k===cc.k&&ca.e!==cc.e){setTimeout(()=>{a.classList.add('ok');c.classList.add('ok');pairs++;sfx.ok();say(ca.k);toast(`${ca.e?ca.f:cc.f} ${esc(ca.k)} = ${esc(wes(ca.k))}`,1800);const r=c.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2,30);open=[];lock=false;upd();if(pairs===NP)miniDone(moves<=10?3:2,'¡Todas las parejas!')},350)}
+      if(ca.k===cc.k&&ca.e!==cc.e){setTimeout(()=>{a.classList.add('ok');c.classList.add('ok');pairs++;sfx.ok();if(L.who!=='reader')say(ca.k);toast(L.who==='reader'?`${ca.e?ca.f:cc.f} ${esc(ca.k)}`:`${ca.e?ca.f:cc.f} ${esc(ca.k)} = ${esc(wes(ca.k))}`,1800);const r=c.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2,30);open=[];lock=false;upd();if(pairs===NP)miniDone(moves<=10?3:2,'¡Todas las parejas!')},350)}
       else setTimeout(()=>{a.classList.remove('on');c.classList.remove('on');open=[];lock=false;upd()},850)}
   }));
 }
 function gSpell(){
-  const A=$('#arena');const list=shuf(L.pool.words.filter(w=>(L.basic?/^[a-z]{3,5}$/:/^[a-z]{3,7}$/).test(w[1]))).slice(0,2);let wi=0;
+  const RD=L.who==='reader';const A=$('#arena');const list=shuf(L.pool.words.filter(w=>(RD?/^[a-záéíóúñ]{3,6}$/:L.basic?/^[a-z]{3,5}$/:/^[a-z]{3,7}$/).test(w[1]))).slice(0,2);let wi=0;
   const next=()=>{
     if(wi>=list.length)return miniDone(3,'¡Palabras descifradas!');
     const w=list[wi],letters=[...w[1]];let pos=0;
-    A.innerHTML=`<div class="spellbox"><button class="big" data-act="sayw" data-t="${esc(w[1])}" aria-label="Escuchar">${w[0]}</button><button class="spk rep" data-act="sayw" data-t="${esc(w[1])}">🔊 Repetir</button><button class="ghost rep" data-act="sayslow" data-t="${esc(w[1])}">🐢 Lento</button><div class="slotsL">${letters.map(()=>'<span></span>').join('')}</div></div>`;
-    $('#mh').innerHTML=L.who==='kid'?'Toca las burbujas en orden para escribir la palabra':'Toca las letras en orden para descifrar la palabra';
-    $('#ms').textContent=`${wi+1}/${list.length}`;$('#mt').textContent='';say(w[1]);
+    A.innerHTML=RD?`<div class="spellbox"><div class="big">${w[0]}</div><div class="slotsL">${letters.map(()=>'<span></span>').join('')}</div></div>`:`<div class="spellbox"><button class="big" data-act="sayw" data-t="${esc(w[1])}" aria-label="Escuchar">${w[0]}</button><button class="spk rep" data-act="sayw" data-t="${esc(w[1])}">🔊 Repetir</button><button class="ghost rep" data-act="sayslow" data-t="${esc(w[1])}">🐢 Lento</button><div class="slotsL">${letters.map(()=>'<span></span>').join('')}</div></div>`;
+    $('#mh').innerHTML=RD?'Escribe el nombre del dibujo: toca las letras en orden':L.who==='kid'?'Toca las burbujas en orden para escribir la palabra':'Toca las letras en orden para descifrar la palabra';
+    $('#ms').textContent=`${wi+1}/${list.length}`;$('#mt').textContent='';if(!RD)say(w[1]);
     const W=A.clientWidth,H=A.clientHeight;
-    shuf(letters.map((l,i)=>({l,i}))).forEach((o,j)=>{const b=document.createElement('button');b.className='bub';b.textContent=o.l.toUpperCase();b.style.setProperty('--d',(j*.3)+'s');
+    shuf(letters.map((l,i)=>({l,i}))).forEach((o,j)=>{const b=document.createElement('button');b.className='bub';b.textContent=RD?o.l:o.l.toUpperCase();b.style.setProperty('--d',(j*.3)+'s');
       b.style.left=Math.max(10,Math.min(W-90,(W/(letters.length+1))*(j+1)-38+(Math.random()*40-20)))+'px';b.style.top=Math.max(190,Math.min(H-90,200+Math.random()*(H-300)))+'px';
       b.addEventListener('pointerdown',ev=>{ev.preventDefault();
-        if(o.l===letters[pos]){const s=A.querySelectorAll('.slotsL span')[pos];s.textContent=o.l.toUpperCase();s.classList.add('f');pos++;sfx.pop();const r=b.getBoundingClientRect();confetti(r.left+38,r.top+38,18);b.remove();
-          if(pos===letters.length){sfx.ok();say(w[1]);toast(`${w[0]} ${esc(w[1])} = ${esc(wes(w[1]))}`,1800);wi++;setTimeout(next,900)}}
+        if(o.l===letters[pos]){const s=A.querySelectorAll('.slotsL span')[pos];s.textContent=RD?o.l:o.l.toUpperCase();s.classList.add('f');pos++;sfx.pop();const r=b.getBoundingClientRect();confetti(r.left+38,r.top+38,18);b.remove();
+          if(pos===letters.length){sfx.ok();if(!RD)say(w[1]);toast(RD?`${w[0]} ${esc(w[1])}`:`${w[0]} ${esc(w[1])} = ${esc(wes(w[1]))}`,1800);wi++;setTimeout(next,900)}}
         else{sfx.no();b.animate([{translate:'-8px 0'},{translate:'8px 0'},{translate:'0 0'}],{duration:300})}});
       A.appendChild(b)});
   };next();
@@ -1104,31 +1418,32 @@ function gMole(kidM){
   A.innerHTML=`<div class="holes">${[0,1,2,3,4,5].map(i=>`<div class="hole"><button class="mole"></button></div>`).join('')}</div>`;
   const moles=$$('.mole');
   const upd=()=>{$('#ms').textContent=`🎯 ${hits}/${need}`;$('#mt').textContent=`⏱ ${time}s`};
-  const pick=()=>{target=R(items);$('#mh').innerHTML=`Toca: <b>${esc(target[1])}</b> <button class="spk" style="width:44px;height:44px;font-size:20px" data-act="sayw" data-t="${esc(target[1])}">🔊</button>`;say(target[1])};
+  const RD=L.who==='reader';
+  const pick=()=>{target=R(items);if(RD){$('#mh').innerHTML=`Toca la palabra de este dibujo: <span style="font-size:46px;vertical-align:middle">${target[0]}</span>`;return}$('#mh').innerHTML=`Toca: <b>${esc(target[1])}</b> <button class="spk" style="width:44px;height:44px;font-size:20px" data-act="sayw" data-t="${esc(target[1])}">🔊</button>`;say(target[1])};
   const end=()=>{if(done)return;done=true;miniDone(hits>=need?3:Math.max(1,Math.floor(hits/2)),hits>=need?'¡Perfecto!':'¡Buen intento!')};
   moles.forEach(m=>m.addEventListener('pointerdown',ev=>{ev.preventDefault();if(done||!m.classList.contains('up'))return;
     if(m.dataset.k===target[1]){hits++;sfx.pop();const r=m.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2,30);m.classList.remove('up');upd();if(hits>=need)end();else pick()}
     else{sfx.no();m.animate([{rotate:'-15deg'},{rotate:'15deg'},{rotate:'0deg'}],{duration:300})}}));
   const show=()=>{if(done)return;const free=moles.filter(m=>!m.classList.contains('up'));if(!free.length)return;const m=R(free);const it=Math.random()<.5?target:R(items);
-    m.textContent=it[0];m.dataset.k=it[1];m.classList.add('up');setTimeout(()=>m.classList.remove('up'),kidM&&L.basic?2200:1700)};
+    m.textContent=RD?it[1]:it[0];m.classList.toggle('word',RD);m.dataset.k=it[1];m.classList.add('up');setTimeout(()=>m.classList.remove('up'),RD?2600:kidM&&L.basic?2200:1700)};
   upd();pick();every(show,700);every(()=>{time--;upd();if(time<=0)end()},1000);
 }
 
 /* ======================= DUELO POR TURNOS, MENSAJES, BIP ======================= */
 let D=null;
 function duo(){
-  clearTimers();const all=Object.values(level1(S.kids.Alex)||level1(S.kids.Luc)?B:K).flatMap(z=>z.phrases.filter(p=>p[0].split(' ').length<=6));
+  clearTimers();if(S.kids[kid].mode==='es'){const all=[...RT.frases.words.map(w=>[w[1],w[1],1]),...shuf(RSYLW).slice(0,6).map(w=>[w[1],w[1],1])];D={r:0,max:6,turn:R(['Alex','Luc']),pts:{Alex:0,Luc:0},q:shuf(all).slice(0,6),rd:1};return duoRender()}const all=Object.values(level1(S.kids.Alex)||level1(S.kids.Luc)?B:K).flatMap(z=>z.phrases.filter(p=>p[0].split(' ').length<=6));
   D={r:0,max:6,turn:R(['Alex','Luc']),pts:{Alex:0,Luc:0},q:shuf(all).slice(0,6)};duoRender();
 }
 function duoRender(){
   const other=D.turn==='Alex'?'Luc':'Alex',p=D.q[D.r];
-  app.innerHTML=`<div class="sub-screen"><div class="shead"><button class="icon" data-act="kidhub">⬅</button><h2>🎤 Reto por turnos</h2><span>Ronda ${D.r+1}/${D.max}</span></div>
+  app.innerHTML=`<div class="sub-screen"><div class="shead"><button class="icon" data-act="kidhub">⬅</button><h2>🎤 ${D.rd?'Reto de lectura':'Reto por turnos'}</h2><span>Ronda ${D.r+1}/${D.max}</span></div>
    <div class="card duo">
     <div class="score2"><div class="${D.turn==='Alex'?'cur':''}">${S.kids.Alex.av} Alex ${D.pts.Alex}</div><div class="${D.turn==='Luc'?'cur':''}">${S.kids.Luc.av} Luc ${D.pts.Luc}</div></div>
     <div class="av">${S.kids[D.turn].av}</div><div class="turn">Turno de ${D.turn}</div>
-    <p class="sub">Di en inglés:</p><div class="phrase" style="justify-content:center">${esc(p[1])}</div>
+    ${D.rd?`<p class="sub">Lee en voz alta:</p><div class="phrase rtext" style="justify-content:center">${esc(p[0])}</div><p><b>${other}</b>, ¿lo leyó bien?</p>`:`<p class="sub">Di en inglés:</p><div class="phrase" style="justify-content:center">${esc(p[1])}</div>
     <button class="ghost" data-act="duoHint">🔊 Pista: escuchar (cuesta medio punto)</button>
-    <p><b>${other}</b>, ¿lo dijo bien? La respuesta es: <span id="dans" style="filter:blur(8px)" data-act="reveal">${esc(p[0])}</span> <small>(toca para ver)</small></p>
+    <p><b>${other}</b>, ¿lo dijo bien? La respuesta es: <span id="dans" style="filter:blur(8px)" data-act="reveal">${esc(p[0])}</span> <small>(toca para ver)</small></p>`}
     <div class="big2"><button class="yes" data-act="duoYes">👍 ¡Sí!</button><button class="again" data-act="duoNo">🔁 Casi</button></div>
    </div></div>${kidTabs('friends')}`;
 }
@@ -1142,16 +1457,16 @@ function duoNext(pts){
    <div class="score2"><div>${S.kids.Alex.av} Alex ${D.pts.Alex}</div><div>${S.kids.Luc.av} Luc ${D.pts.Luc}</div></div>
    <p class="sub">Los dos ganan estrellas, y juntos le regalaron a la isla: ${it[0]} ${esc(it[1])}</p>
    <div class="row"><button class="go" style="width:auto" data-act="duo">🔁 Otra vez</button><button class="ex" data-act="kidhub">🏝️ A la isla</button></div></div>`;
-  celebrate(3);say(w?`${w} wins! Great game!`:"It's a tie! Great game!");
+  celebrate(3);D.rd?talk([[ES,w?`¡Ganó ${w}! ¡Qué buen juego!`:'¡Empate! ¡Qué buen juego!']]):say(w?`${w} wins! Great game!`:"It's a tie! Great game!");
 }
 let MS={st:'🦖',ph:0};
 function msgs(){
   clearTimers();const other=kid==='Alex'?'Luc':'Alex';S.msgs.forEach(m=>{if(m.to===kid)m.read=1});save();
   const th=S.msgs.filter(m=>(m.from===kid&&m.to===other)||(m.from===other&&m.to===kid)).slice(-30);
   app.innerHTML=`<div class="sub-screen"><div class="shead"><button class="icon" data-act="kidhub">⬅</button><h2>💬 Mensajes con ${other} ${S.kids[other].av}</h2></div>
-   <div class="thread" id="th">${th.length?th.map(m=>`<button class="msg ${m.from===kid?'mine':''}" data-act="sayw" data-t="${esc(m.t)}"><span>${m.st}</span>${esc(m.t)}<small>${esc(m.from)} · ${esc(m.es)} · 🔊</small></button>`).join(''):`<p style="opacity:.7">Todavía no hay mensajes. ¡Mándale el primero a ${other}!</p>`}</div>
+   <div class="thread" id="th">${th.length?th.map(m=>m.lang==='es'?`<div class="msg ${m.from===kid?'mine':''}"><span>${m.st}</span>${esc(m.t)}<small>${esc(m.from)} · 📖 ¡léelo tú!</small></div>`:`<button class="msg ${m.from===kid?'mine':''}" data-act="sayw" data-t="${esc(m.t)}"><span>${m.st}</span>${esc(m.t)}<small>${esc(m.from)} · ${esc(m.es)} · 🔊</small></button>`).join(''):`<p style="opacity:.7">Todavía no hay mensajes. ¡Mándale el primero a ${other}!</p>`}</div>
    <div><b>1. Elige un sticker</b><div class="chips">${MSG_ST.map(s=>`<button class="chip e ${MS.st===s?'on':''}" data-act="pickSt" data-s="${s}">${s}</button>`).join('')}</div></div>
-   <div><b>2. Elige qué decir en inglés</b><div class="chips">${MSGP.map((p,i)=>`<button class="chip ${MS.ph===i?'on':''}" data-act="pickPh" data-i="${i}">${esc(p[0])}</button>`).join('')}</div></div>
+   ${S.kids[kid].mode==='es'?`<div><b>2. Lee y elige qué escribir</b><div class="chips">${MSGP_ES.map((p,i)=>`<button class="chip ${MS.ph===i?'on':''}" data-act="pickPh" data-i="${i}">${esc(p)}</button>`).join('')}</div></div>`:`<div><b>2. Elige qué decir en inglés</b><div class="chips">${MSGP.map((p,i)=>`<button class="chip ${MS.ph===i?'on':''}" data-act="pickPh" data-i="${i}">${esc(p[0])}</button>`).join('')}</div></div>`}
    <button class="go" data-act="sendMsg">✈️ Enviar a ${other}</button></div>${kidTabs('friends')}`;
   const t=$('#th');t.scrollTop=t.scrollHeight;
 }
@@ -1296,11 +1611,11 @@ function lastDays(st,n){return Array.from({length:n},(_,i)=>{const dt=new Date(D
 const pctx=(o,a)=>a?Math.round(o/a*100):null;
 function dash(n){
   ctx='dash';AUTO=false;clearTimers();closeModal();skin('cuna');P.length=0;
-  const tabs=`<div class="dtabs">${['Alex','Luc'].map(x=>`<button class="${x===n?'on':''}" data-act="dashTab" data-n="${x}">${S.kids[x].av} ${x}</button>`).join('')}<button class="${n==='Adulto'?'on':''}" data-act="dashTab" data-n="Adulto">👑 Adulto</button></div>`;
+  const tabs=`<div class="dtabs">${['Alex','Luc'].map(x=>`<button class="${x===n?'on':''}" data-act="dashTab" data-n="${x}">${S.kids[x].av} ${x} · 🇬🇧</button><button class="${x+'-es'===n?'on':''}" data-act="dashTab" data-n="${x}-es">${S.kids[x].av} ${x} · 📖</button>`).join('')}<button class="${n==='Adulto'?'on':''}" data-act="dashTab" data-n="Adulto">👑 Adulto</button></div>`;
   let body='';
-  if(n==='Adulto')body=dashAdult();else body=dashKid(n);
+  if(n==='Adulto')body=dashAdult();else if(n.endsWith('-es'))body=dashRead(n.slice(0,-3));else body=dashKid(n);
   app.innerHTML=`<div class="dash"><header class="dhead"><button class="icon" data-act="home" aria-label="Inicio">🏠</button><div><h1>📊 Progreso</h1><small>Solo para padres · los datos son de este dispositivo</small></div></header>${tabs}${body}
-   <section class="dcard"><h3>Herramientas</h3><div class="row" style="justify-content:flex-start">${n!=='Adulto'?`<button class="ghost" data-act="placeAgain" data-n="${n}">🔍 Repetir el test de ${n}</button>`:''}<button class="ghost" data-act="dashRaw">📋 Tabla resumen</button><button class="ghost" data-act="resetAsk">🗑️ Borrar todo el progreso</button></div></section></div>`;
+   <section class="dcard"><h3>Herramientas</h3><div class="row" style="justify-content:flex-start">${n==='Adulto'?'':n.endsWith('-es')?`<button class="ghost" data-act="rplaceAgain" data-n="${n.slice(0,-3)}">🔍 Repetir el test de lectura</button>`:`<button class="ghost" data-act="placeAgain" data-n="${n}">🔍 Repetir el test de ${n}</button>`}<button class="ghost" data-act="dashRaw">📋 Tabla resumen</button><button class="ghost" data-act="resetAsk">🗑️ Borrar todo el progreso</button></div></section></div>`;
 }
 function dashKid(n){
   const k=S.kids[n],st=stat(k),lv1=level1(k);
@@ -1342,6 +1657,38 @@ function dashKid(n){
   <section class="dcard"><h3>🔁 Por repasar (${k.weak.length})</h3><div class="wchips weak">${k.weak.length?k.weak.map(x=>`<span>${em(x.k)} ${esc(x.k)} <small>${esc(wes(x.k)||(findP(x.k)||[[0,'']])[0][1])}</small><u>${'●'.repeat(x.n)}</u></span>`).join(''):'<p>Nada pendiente. 🎉</p>'}</div><p class="dnote">Los puntos indican cuántas veces más debe acertarla para salir de la lista.</p></section>
   <section class="dcard"><h3>Alex y Luc</h3><table class="par"><tr><th></th><th>Nivel</th><th>Dominadas</th><th>Aciertos</th><th>Lecciones</th><th>Esta semana</th></tr>${['Alex','Luc'].map(x=>{const kk=S.kids[x],ss=stat(kk),w=new Set(kk.weak.map(y=>y.k)),m=[...new Set(kk.known)].filter(y=>!w.has(y)).length,a=pctx(ss.o,ss.a);return`<tr><td>${kk.av} ${x}</td><td>${level1(kk)?'1 ('+kk.basic+'/6)':'2'}</td><td>${m}</td><td>${a!=null?a+'%':'—'}</td><td>${kk.done}</td><td>${lastDays(ss,7).reduce((s2,y)=>s2+y.v.m,0)} min</td></tr>`}).join('')}</table></section>`;
 }
+function dashRead(n){
+  const k=S.kids[n],rd=k.rd,st=stat(rd),ti=rTopic(rd);
+  const weak=new Set(rd.weak.map(x=>x.k));const allW=[...new Set(RORD.flatMap(z=>RT[z].words.map(w=>w[1])))];
+  const mastered=[...new Set(rd.known)].filter(w=>!weak.has(w)&&allW.includes(w));
+  const acc=pctx(st.o,st.a),days=lastDays(st,14),wk=days.slice(-7),mins=wk.reduce((a,x)=>a+x.v.m,0),max=Math.max(1,...days.map(x=>x.v.l));
+  const wpm=(st.wpm||[]).slice(-5),avgW=wpm.length?Math.round(wpm.reduce((a,x)=>a+x.v,0)/wpm.length):null;
+  const last=Object.keys(st.days).filter(d=>st.days[d].l).sort().pop();const idle=last?Math.round((Date.parse(today())-Date.parse(last))/864e5):null;
+  const em=x=>{const f=rFind(x);return f?f[0][0]+' ':''};
+  const rec=[];
+  if(!rd.placed)rec.push(['🔍',`${n} todavía no ha hecho el test de lectura. Aparece al entrar en «📖 Aprender a leer».`]);
+  if(idle!=null&&idle>=2)rec.push(['⏰',`No lee desde hace ${idle} días. Leer un poquito cada día es lo que más ayuda.`]);
+  if(rd.weak.length)rec.push(['🔁',`Le cuestan: ${rd.weak.slice(0,6).map(x=>em(x.k)+esc(x.k)).join(', ')}. La app las repite sola; también pueden escribirlas juntos en papel.`]);
+  RORD.forEach(z=>{const zs=st.zones[z];if(zs&&zs.a>=6&&zs.o/zs.a<.6)rec.push(['🧩',`${RT[z].e} ${RT[z].n}: acierta ${pctx(zs.o,zs.a)}%. Conviene repetir ese tema.`])});
+  if((st.reads||0)>=5&&!(st.mic))rec.push(['🎤','Todas las lecturas en voz alta las calificó un adulto. Abriendo la app desde el enlace de GitHub en Safari, el micrófono puede calificarlas solo.']);
+  if(avgW!=null)rec.push(['⏱️',`Lee unas ${avgW} palabras por minuto en voz alta. Lo importante es que suba poco a poco, no la cifra exacta.`]);
+  if(!rec.length)rec.push(['🌟','Va muy bien. Sigan así.']);
+  return`<section class="dgrid">
+   <div class="dstat big"><small>Tema actual</small><b>${ti+1}/${RORD.length}</b><span>${RT[RORD[ti]].e} ${RT[RORD[ti]].n}</span><div class="tbar"><i style="width:${(ti+1)/RORD.length*100}%"></i></div></div>
+   <div class="dstat"><small>Palabras que lee bien</small><b>${mastered.length}</b><span>de ${allW.length} en la app</span></div>
+   <div class="dstat"><small>Aciertos</small><b>${acc!=null?acc+'%':'—'}</b><span>${st.a} respuestas</span></div>
+   <div class="dstat"><small>Lecturas en voz alta</small><b>${st.reads||0}</b><span>${st.mic||0} calificadas con micrófono</span></div>
+   <div class="dstat"><small>Velocidad lectora</small><b>${avgW!=null?avgW:'—'}</b><span>palabras por minuto</span></div>
+   <div class="dstat"><small>Tiempo esta semana</small><b>${mins} min</b><span>${rd.done} lecciones en total</span></div></section>
+  ${rd.place?`<p class="dnote">🔍 En el test inicial (${esc(rd.place.date)}) leyó bien ${rd.place.known} de ${rd.place.total} y empezó en «${RT[RORD[rd.place.start||0]].n}».</p>`:''}
+  <section class="dcard"><h3>💡 Qué hacer ahora</h3><ul class="recs">${rec.map(r=>`<li><span>${r[0]}</span><p>${r[1]}</p></li>`).join('')}</ul></section>
+  <section class="dcard"><h3>Lecciones de lectura por día · últimos 14 días</h3>
+   <div class="chart">${days.map(x=>`<div class="col" title="${x.dt.toLocaleDateString('es',{weekday:'short',day:'numeric',month:'short'})}: ${x.v.l} lecciones, ${x.v.m} min"><i style="height:${x.v.l/max*100}%"></i>${x.v.l?`<em>${x.v.l}</em>`:''}<small>${x.dt.toLocaleDateString('es',{weekday:'narrow'})}</small></div>`).join('')}</div></section>
+  <section class="dcard"><h3>Camino de lectura</h3>${RORD.map((z,i)=>{const p=RT[z],zs=st.zones[z]||{a:0,o:0},za=pctx(zs.o,zs.a),c=rd.zones[z]||0;return`<div class="trow ${i>ti?'lock':''}"><span class="te">${p.e}</span><span class="tn">${p.n}${i>ti?' 🔒':i<ti?' ✅':''}<small>${c} ${c===1?'lección':'lecciones'}${za!=null?' · '+za+'% aciertos':''}</small></span><div class="tbar"><i style="width:${i<ti?100:i===ti?(rd.done%2)*50:0}%"></i></div><b>${i<ti?'✓':i===ti?'ahora':''}</b></div>`}).join('')}</section>
+  <section class="dcard"><h3>✅ Ya lee (${mastered.length})</h3><div class="wchips">${mastered.length?mastered.map(w=>`<span>${em(w)}${esc(w)}</span>`).join(''):'<p>Aún ninguna.</p>'}</div></section>
+  <section class="dcard"><h3>🔁 Por repasar (${rd.weak.length})</h3><div class="wchips weak">${rd.weak.length?rd.weak.map(x=>`<span>${em(x.k)}${esc(x.k)}<u>${'●'.repeat(x.n)}</u></span>`).join(''):'<p>Nada pendiente. 🎉</p>'}</div></section>`;
+}
+
 function dashAdult(){
   const A=S.adult,st=stat(A),acc=pctx(st.o,st.a),d=dStage();
   if(!A.onb)return`<section class="dcard"><p>El perfil adulto todavía no se ha creado.</p></section>`;
@@ -1359,10 +1706,19 @@ const ACT={
  home,kidhub:()=>kidHub(),adult,parents,realm,ach,settings,friends,stickers,duo,msgs,chat,
  kid:d=>kidHub(d.n),
  play:()=>{AUTO=true;autoRun=0;trail()},
+ playAny:()=>{S.kids[kid].mode==='es'?ACT.rplay():ACT.play()},
+ rplay:()=>{AUTO=true;autoRun=0;rTrail()},
+ rGo:()=>{if(!AUTO)AUTO=true;const rd=S.kids[kid].rd;rStart(RORD[rTopic(rd)])},
+ rzone:d=>{AUTO=false;rStart(d.z)},
+ lockedZone:()=>{toast('🔒 Primero termina los temas anteriores');sfx.no()},
+ mode:d=>{S.kids[kid].mode=d.m;save();sfx.win();kidHub()},
+ rMic,rJudge:d=>{const e=L.q[L.i];if(L.answered)return;rFinish(e,d.v==='1',null,0)},
+ rplStart,rplSkip:()=>{const rd=S.kids[kid].rd;rd.placed=true;rd.start=0;save();kidHub()},rplOpt:d=>rplAnswer(+d.v),rplNext:()=>{RPL.i++;rplShow()},
+ rplaceAgain:d=>{closeModal();kid=d.n;S.kids[d.n].mode='es';S.kids[d.n].rd.placed=false;save();rPlacement()},
  plStart,plSkip:()=>{S.kids[kid].placed=true;save();kidHub()},plOpt:d=>plAnswer(+d.v),plNext:()=>{PL.i++;plShow()},
  placeAgain:d=>{closeModal();kid=d.n;S.kids[d.n].placed=false;save();placement()},
  autoGo:()=>{if(!AUTO)AUTO=true;const k=S.kids[kid];const z=level1(k)?BORD[k.basic%6]:ZORD[k.done%3];startLesson({who:'kid',zone:z,pool:B[z]||K[z]})},
- autoNext:()=>{if(!AUTO)return;autoRun++;autoRun%3===0?breakTime():trail()},
+ autoNext:()=>{if(!AUTO)return;autoRun++;autoRun%3===0?breakTime():(S.kids[kid].mode==='es'?rTrail():trail())},
  pauseAuto:(d,el)=>{AUTO=false;el.remove();toast('⏸ Modo automático en pausa');const b=$('.next.auto');if(b)b.classList.remove('auto');clearTimers()},
  letter:(d,el)=>{el.style.setProperty('--h',Math.floor(Math.random()*360));el.animate([{scale:1},{scale:1.7,rotate:'20deg'},{scale:1}],{duration:500});sfx.pop()},
  skins:()=>{
@@ -1374,19 +1730,19 @@ const ACT={
  continue:()=>{const k=S.kids[kid];if(!k.placed)return placement();if(level1(k)){const z=BORD[k.basic%6];return startLesson({who:'kid',zone:z,pool:B[z]})}const z=Object.keys(K).sort((a,b)=>(k.zones[a]||0)-(k.zones[b]||0))[0];startLesson({who:'kid',zone:z,pool:K[z]})},
  mission:()=>{const r=recRegion();startLesson({who:'adult',region:r,pool:REG[r]})},
  region:d=>startLesson({who:'adult',region:d.r,pool:REG[d.r]}),
- bip:()=>{const j=R(JOKES);bipSay(j[0],j[1]);talk([[EN,j[0]],[ES,j[1]]],'bip');sfx.pop()},
- sayitem:(d,el)=>{say(d.t);el.classList.remove('boing');void el.offsetWidth;el.classList.add('boing');bipSay(d.t[0].toUpperCase()+d.t.slice(1)+'!',wes(d.t)?'= '+wes(d.t):'');sfx.pop()},
+ bip:()=>{if(kid&&S.kids[kid].mode==='es'){const j=R(CHISTES);bipSay(j[0],j[1]);talk([[ES,j[0]],[ES,j[1]]],'bip');sfx.pop();return}const j=R(JOKES);bipSay(j[0],j[1]);talk([[EN,j[0]],[ES,j[1]]],'bip');sfx.pop()},
+ sayitem:(d,el)=>{if(kid&&S.kids[kid].mode==='es'){talk([[ES,capi(wes(d.t)||d.t)]]);el.classList.remove('boing');void el.offsetWidth;el.classList.add('boing');sfx.pop();return}say(d.t);el.classList.remove('boing');void el.offsetWidth;el.classList.add('boing');bipSay(d.t[0].toUpperCase()+d.t.slice(1)+'!',wes(d.t)?'= '+wes(d.t):'');sfx.pop()},
  sayw:d=>say(d.t),
  sayslow:d=>say(d.t,'en-US',.55),
  opt:(d,el)=>{if(L.answered)return;const e=L.q[L.i];const ok=!!el.dataset.r;if(!ok)el.classList.add('wrong');
-   const corr=(e.t==='pic'||e.t==='hear'||e.t==='word')?`${e.w[0]} ${e.w[1]}`:(e.t==='fill'||e.t==='karaoke')?e.en:e.ans;answer(ok,corr);
+   const corr=L.who==='reader'?'':(e.t==='pic'||e.t==='hear'||e.t==='word')?`${e.w[0]} ${e.w[1]}`:(e.t==='fill'||e.t==='karaoke')?e.en:e.ans;answer(ok,corr);
    if(e.t==='fill'||e.t==='karaoke'){const bl=$('.blank');if(bl){bl.style.color='inherit';bl.style.borderColor='#22c55e'}}},
- tile:d=>{if(L.answered)return;const i=+d.i;if(!L.built.includes(i)){L.built.push(i);sfx.tap();say(L.q[L.i].tiles[i],'en-US',1);renderBuild()}},
+ tile:d=>{if(L.answered)return;const i=+d.i;if(!L.built.includes(i)){L.built.push(i);sfx.tap();if(L.who!=='reader')say(L.q[L.i].tiles[i],'en-US',1);renderBuild()}},
  slot:d=>{if(L.answered)return;L.built.splice(+d.j,1);sfx.tap();renderBuild()},
- check:()=>{const e=L.q[L.i];const got=norm(L.built.map(i=>e.tiles[i]).join(' '));const ok=got===norm(e.ans.join(' '));answer(ok,e.ans.join(' '))},
+ check:()=>{const e=L.q[L.i];if(e.t==='rbuild'||e.t==='rorder'){const sep=e.t==='rbuild'?'':' ';const got=L.built.map(i=>e.tiles[i]).join(sep);answer(got===e.ans.join(sep),e.ans.join(sep));return}const got=norm(L.built.map(i=>e.tiles[i]).join(' '));const ok=got===norm(e.ans.join(' '));answer(ok,e.ans.join(' '))},
  next:()=>{L.i++;L.done++;showEx()},
- quit:()=>modal(`<h3>¿Salir de la lección?</h3><p>${L.who==='kid'?'¡Te faltan poquitos ejercicios para el cofre! 🎁':'Perderás el avance de esta lección.'}</p><div class="row" style="justify-content:flex-start"><button class="btnA" data-act="closeModal">Seguir jugando</button><button class="ghost" data-act="quitYes">Salir</button></div>`),
- quitYes:()=>{closeModal();L.who==='kid'?kidHub():realm()},
+ quit:()=>modal(`<h3>¿Salir de la lección?</h3><p>${L.who!=='adult'?'¡Te faltan poquitos ejercicios para el cofre! 🎁':'Perderás el avance de esta lección.'}</p><div class="row" style="justify-content:flex-start"><button class="btnA" data-act="closeModal">Seguir jugando</button><button class="ghost" data-act="quitYes">Salir</button></div>`),
+ quitYes:()=>{closeModal();L.who!=='adult'?kidHub():realm()},
  mic,saidit:()=>answer(true,''),
  chest:()=>{const c=$('#chest');if(!c||c.dataset.open)return;c.dataset.open=1;c.innerHTML=L&&L.who==='adult'?'💰':'🎉';$('#loot').hidden=false;const r=c.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2,160);fireworks(3);shake()},
  closeModal,
@@ -1397,10 +1753,10 @@ const ACT={
  duoYes:()=>duoNext(D.hint?.5:1),duoNo:()=>duoNext(0),
  duoHint:()=>{D.hint=1;say(D.q[D.r][0])},
  reveal:(d,el)=>{el.style.filter='none';say(el.textContent)},
- pickSt:d=>{MS.st=d.s;sfx.tap();msgs()},pickPh:d=>{MS.ph=+d.i;say(MSGP[+d.i][0]);msgs()},
- sendMsg:()=>{const other=kid==='Alex'?'Luc':'Alex',p=MSGP[MS.ph];S.msgs.push({from:kid,to:other,st:MS.st,t:p[0],es:p[1],ts:Date.now()});S.msgs=S.msgs.slice(-100);S.kids[kid].stars+=1;weekAdd(S.kids[kid],1);save();msgs();rain(['✈️',MS.st,'💌'],14);sfx.win();toast(`✈️ ¡Enviado a ${other}! +1 ⭐`)},
+ pickSt:d=>{MS.st=d.s;sfx.tap();msgs()},pickPh:d=>{MS.ph=+d.i;if(S.kids[kid].mode!=='es')say(MSGP[+d.i][0]);msgs()},
+ sendMsg:()=>{const other=kid==='Alex'?'Luc':'Alex',esM=S.kids[kid].mode==='es',p=esM?[MSGP_ES[MS.ph%MSGP_ES.length],'']:MSGP[MS.ph%MSGP.length];S.msgs.push({from:kid,to:other,st:MS.st,t:p[0],es:p[1],lang:esM?'es':'en',ts:Date.now()});S.msgs=S.msgs.slice(-100);S.kids[kid].stars+=1;weekAdd(S.kids[kid],1);save();msgs();rain(['✈️',MS.st,'💌'],14);sfx.win();toast(`✈️ ¡Enviado a ${other}! +1 ⭐`)},
  chatQ:d=>chatSend(d.t),chatMic,
- miniGo:()=>{const h=$('.howto');if(h)h.remove();sfx.pop();({pop:gPop,catch:gCatch,memory:gMemory,spell:gSpell,mole:gMole})[L.mg](L.who==='kid')},
+ miniGo:()=>{const h=$('.howto');if(h)h.remove();sfx.pop();({pop:gPop,catch:gCatch,memory:gMemory,spell:gSpell,mole:gMole})[L.mg](L.who!=='adult')},
  skipMini:()=>miniDone(1,'¡Seguimos!'),
  stkTap:(d,el)=>{el.animate([{scale:1},{scale:1.6,rotate:'360deg'},{scale:1}],{duration:600});sfx.pop();const r=el.getBoundingClientRect();confetti(r.left+30,r.top+30,30)},
  onbOpt:d=>{const s=ONB[+d.i];if(s.multi){const a=OB[s.k]||[];OB[s.k]=a.includes(d.o)?a.filter(x=>x!==d.o):[...a,d.o]}else OB[s.k]=d.o;sfx.tap();onb(+d.i)},
